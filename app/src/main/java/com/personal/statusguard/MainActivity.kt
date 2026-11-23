@@ -66,7 +66,7 @@ class MainActivity : Activity() {
         val devBlock = devotion.block
         text(
             R.id.devotionText,
-            (if (devBlock == null || !devBlock.enabled) "No devotion time set yet." else "Devotion time ${devBlock.startText()}–${devBlock.endText()}, ${devBlock.daysText().lowercase()}") +
+            (if (devBlock == null || !devBlock.enabled) "No devotion time set yet." else "Devotion time ${devBlock.startText()}–${devBlock.endText()}  ·  ${devBlock.daysText()}") +
                 "\n" + when {
                     devotion.isDone(today) -> "Today: ${devotion.entry(today)} ✓"
                     devotion.isMissed(today) -> "Today: not done"

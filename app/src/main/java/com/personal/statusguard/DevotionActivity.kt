@@ -31,11 +31,12 @@ class DevotionActivity : Activity() {
         picker(R.id.start, block?.start ?: (7 * 60))
         picker(R.id.end, block?.end ?: (10 * 60))
         findViewById<EditText>(R.id.quick).setText((block?.quickMinutes ?: 10).toString())
+        val daysList = findViewById<LinearLayout>(R.id.days)
         dayBoxes = (1..7).associateWith { day ->
             CheckBox(this).apply {
                 text = DayOfWeek.of(day).getDisplayName(TextStyle.FULL, Locale.getDefault())
                 isChecked = block == null || day in block.days
-                findViewById<LinearLayout>(R.id.days).addView(this)
+                daysList.addView(this)
             }
         }
         apps = store.apps
@@ -89,6 +90,7 @@ class DevotionActivity : Activity() {
     }
 
     private fun save() {
+        currentFocus?.clearFocus() // a time typed into a picker only counts once the picker loses focus
         val quick = findViewById<EditText>(R.id.quick).text.toString().toIntOrNull()
         val start = minutesOf(R.id.start)
         val end = minutesOf(R.id.end)

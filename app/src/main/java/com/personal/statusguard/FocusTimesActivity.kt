@@ -85,6 +85,7 @@ class FocusTimesActivity : Activity() {
         if (existing != null) dialog.setNeutralButton("Delete") { _, _ -> store.delete(existing.id); refresh() }
         val shown = dialog.show()
         shown.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            view.findFocus()?.clearFocus() // a time typed into a picker only counts once the picker loses focus
             val minutes = quick.text.toString().toIntOrNull()
             val from = start.hour * 60 + start.minute
             val to = end.hour * 60 + end.minute

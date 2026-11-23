@@ -83,6 +83,7 @@ class SleepActivity : Activity() {
         val dialog = AlertDialog.Builder(this)
             .setView(view)
             .setPositiveButton("Save") { _, _ ->
+                view.findFocus()?.clearFocus() // a time typed into a picker only counts once the picker loses focus
                 store.save(
                     SleepSchedule(
                         id = existing?.id ?: store.newId(),

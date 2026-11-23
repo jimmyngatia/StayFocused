@@ -224,6 +224,7 @@ class AlarmEditActivity : Activity() {
     }
 
     private fun save(): Boolean {
+        currentFocus?.clearFocus() // a time typed into the picker only counts once it loses focus
         val days = dayBoxes.filterValues { it.isChecked }.keys
         val level = level()
         fun number(id: Int) = field(id).text.toString().toIntOrNull()

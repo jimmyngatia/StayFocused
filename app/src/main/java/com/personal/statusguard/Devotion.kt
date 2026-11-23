@@ -207,17 +207,23 @@ class DevotionGuard(private val service: AccessibilityService, private val handl
     private var lastTry = 0L
     private var lastLook = 0L
 
-    /** Looked up once a minute: reading them on every event would be slow. */
+    /** Whether it's devotion time (looked up every 5 s) and the free apps (every minute): not on every event. */
     private var active: LocalDate? = null
     private var allowed = emptySet<String>()
-    private var refreshedAt = 0L
+    private var activeAt = 0L
+    private var allowedAt = 0L
 
     private fun refresh(force: Boolean = false) {
         val now = SystemClock.elapsedRealtime()
-        if (!force && now - refreshedAt < 60_000) return
-        refreshedAt = now
-        active = store.current()
-        if (active != null) allowed = store.allowedPackages()
+        if (force || now - activeAt > 5_000) {
+            activeAt = now
+            val was = active
+            active = store.current()
+            if (active != null && (was == null || force || now - allowedAt > 60_000)) {
+                allowedAt = now
+                allowed = store.allowedPackages()
+            }
+        }
     }
 
     /** Once a second while another app is open during devotion time. */
@@ -228,13 +234,20 @@ class DevotionGuard(private val service: AccessibilityService, private val handl
         }
     }
 
-    /** Once a minute: devotion time starting or ending, the reminder, and missed days. */
+    /**
+     * Every 30 seconds: devotion time starting or ending (an app left open when it starts, which may
+     * send no events, is caught here), the reminder, and missed days.
+     */
     private val minute = object : Runnable {
         override fun run() {
             refresh(force = true)
+            if (active != null && !ticking) {
+                ticking = check(countSecond = false)
+                if (ticking) handler.postDelayed(tick, 1000)
+            }
             store.settleMissed()
             ask(openScreen = power.isInteractive && !keyguard.isKeyguardLocked)
-            handler.postDelayed(this, 60_000)
+            handler.postDelayed(this, 30_000)
         }
     }
 
