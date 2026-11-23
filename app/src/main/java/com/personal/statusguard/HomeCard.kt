@@ -46,17 +46,24 @@ class HomeCard(private val service: AccessibilityService, private val handler: H
 
     private val folded get() = prefs.getBoolean("card_folded", false)
 
-    /** Decides whether the card should show, a moment after the screen changes. */
-    private val check = Runnable { update() }
+    /**
+     * Decides whether the card should show. Screens slide in and out, so right after a change the old
+     * screen may still be in front: it looks a few times while things settle.
+     */
+    private val checks = listOf(150L, 500L, 1000L, 2000L).map { delay -> delay to Runnable { update() } }
 
-    /** While the card is showing: looks again every second (the notification bar doesn't always say it opened). */
+    /**
+     * While the launcher is in front (home, app list or recent apps) or the card is showing: looks again
+     * every second, since the launcher and the notification bar don't always say when they change.
+     */
+    private var watching = false
     private val watch = object : Runnable {
         override fun run() {
-            if (card == null) return
             update()
-            handler.postDelayed(this, 1000)
+            if (card != null || launcherInFront) handler.postDelayed(this, 1000) else watching = false
         }
     }
+    private var launcherInFront = false
 
     fun start() {
         current = this
@@ -71,16 +78,23 @@ class HomeCard(private val service: AccessibilityService, private val handler: H
     fun onEvent(type: Int, pkg: String) {
         // The launcher too: opening the app list or recent apps doesn't change the app in front.
         if (type == android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || pkg == EscapeGuard.SYSTEM_UI || pkg in homePackages) {
-            handler.removeCallbacks(check)
-            handler.postDelayed(check, 150)
+            for ((delay, run) in checks) {
+                handler.removeCallbacks(run)
+                handler.postDelayed(run, delay)
+            }
         }
     }
 
     private fun update() {
         val root = service.rootInActiveWindow
         val front = root?.packageName?.toString()
-        val onHome = front != null && front in homePackages && !keyguard.isKeyguardLocked && onHomePage(root, front)
+        launcherInFront = front != null && front in homePackages
+        val onHome = launcherInFront && !keyguard.isKeyguardLocked && onHomePage(root!!, front!!)
         if (enabled(service) && onHome) show() else hide()
+        if ((card != null || launcherInFront) && !watching) {
+            watching = true
+            handler.postDelayed(watch, 1000)
+        }
     }
 
     /**
@@ -102,12 +116,10 @@ class HomeCard(private val service: AccessibilityService, private val handler: H
         runCatching { wm.addView(view, lp) }.onSuccess {
             card = view
             params = lp
-            handler.postDelayed(watch, 1000)
         }
     }
 
     private fun hide() {
-        handler.removeCallbacks(watch)
         card?.let { runCatching { wm.removeView(it) } }
         card = null
     }
