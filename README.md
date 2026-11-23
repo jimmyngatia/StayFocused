@@ -1,8 +1,9 @@
 # Status Guard
 
 A personal Android app (Android 12+) that blocks WhatsApp Status / the Updates tab outside the
-times and daily limit you set, and limits TikTok, YouTube Shorts and Instagram to one shared daily
-pot of entertainment time. Works with WhatsApp and WhatsApp Business (English).
+times and daily limit you set, closes WhatsApp during focus times (e.g. morning devotion) after a
+short quick check, and limits TikTok, YouTube Shorts, Instagram and any apps you add to one shared
+daily pot of entertainment time. Works with WhatsApp and WhatsApp Business (English).
 
 ## Rules
 - **Daily limit** (default 30 min): time only counts while status is on screen. Resets at midnight.
@@ -28,6 +29,13 @@ emails your accountability partners. Only **test** rings have a "Stop test" link
 Editing or deleting an alarm needs the password; adding one is free. **Switch off for tomorrow**
 (skips only the next ring, can be undone) needs no password, but it shows in the weekly report.
 Alarms can't be edited while one is ringing.
+
+**No way out through the phone.** While an alarm is running (from the first ring to the end of the
+awake watch): pulling down the notification bar closes it again straight away (its "Active apps → Stop"
+would kill the alarm), Android Settings sends you back to the alarm (that's where permissions are
+removed and apps force-stopped), and the power menu closes before "Power off" can be tapped. The lock
+screen and its PIN pad are left alone, since you unlock to scan. Holding power + volume down for
+about 10 seconds forces a restart, which no app can block: it still counts as switched off.
 
 **Accountability partner.** The top of each alarm's settings asks you to add one: the people in
 the auto-email settings get an email when you go back to sleep (levels 3 and 4) or switch the phone off.
@@ -90,13 +98,15 @@ Home screen → **Social media** → **Social media settings** (password). Off u
 **Block social media** and save.
 
 - **Apps**: TikTok (whole app), YouTube **Shorts** (normal YouTube stays free) and Instagram (whole app).
+  **Choose other apps…** adds any other app (Facebook, X, a game…): whole app, same pot, same times,
+  same force open, its own line in the report.
 - **One shared pot**: one daily limit (default 30 min) for all of them together, counted only while
   watching. Resets at midnight.
 - **Allowed times** (default `19:00-21:00`, several allowed). Outside them, or once the pot is used up,
   the apps are covered and every try is counted per app.
 - **Force open**: the only way in when blocked. Opens that app for 5 minutes, then it closes again.
-  It **cuts every streak in half** (status, social, mornings, sleep) and shows in the report.
-- **Social streak**: days since you set it up, halved by every force open.
+  It **resets the social streak** (and breaks today's general streak) and shows in the report.
+- **Social streak**: days since you set it up or since the last force open.
 - The report (screen, PDF and email) shows time per app and per day, tries per app, force opens,
   days the pot was used up, the hour with most tries, and all four streaks.
 
@@ -104,7 +114,7 @@ If Shorts detection misses, `adb logcat -s StatusGuard` shows `social: shorts wa
 Detection lives in `ShortsDetector` in `app/src/main/java/com/personal/statusguard/Social.kt`.
 
 ## Home page
-Sections: **My streak**, **Today** (phone time, blocked tries, force opens), **WhatsApp status**,
+Sections: **My streak**, **Today** (phone time, blocked tries, force opens), **WhatsApp** (status and focus times),
 **Social media**, **Strict alarms**, **Sleep time**, **My words** and **Account**.
 Settings marked with a lock need the password.
 
@@ -120,19 +130,39 @@ wake-up time, a good-night quote (sometimes one of yours) and the apps you can s
 - **Sleep counter**: time with the screen off during sleep time. Touching the phone pauses it.
   Each night is saved under the morning it ended.
 - Opening a covered app counts as a sleep-time try (the home screen doesn't).
-- **Force bypass**: opens the whole phone for 5 minutes, then the night screen returns. It's a slip
-  (general streak back to 0) and cuts every other streak in half. Counted in the report.
+- **Music stops at bedtime.** Anything playing (Spotify, YouTube, Boomplay…) is paused, and so is
+  anything started later. If an app keeps playing, Status Guard takes the audio focus, then mutes
+  media until wake-up (unmuted again in the morning; the alarm has its own volume).
+- **Power menu** closes straight away during sleep time.
+- **Force bypass**: opens the whole phone for 5 minutes, then the night screen returns. It resets the
+  sleep streak and breaks today's general streak; other streaks aren't touched. Counted in the report.
 - The report shows sleep per night, the average, the best night, tries and bypasses.
 
 ## Streak
-The big number is the **general streak**: days in a row where every rule was kept. Any one slip
-breaks it: a force open, a sleep-time try or force bypass, or an alarm shortcut, or an alarm
-escaped by restarting. Under it are the four area streaks (status, social, mornings, sleep).
-A force open, or going back to sleep after an alarm, halves all of them.
+The big number is the **general streak**: days in a row where every streak held. Any one slip
+breaks it for that day. Under it are the four area streaks, and **each slip only costs its own one**:
+
+| Streak | Counts | Reset by |
+|---|---|---|
+| WhatsApp | days without opening anyway | "Open anyway" during a focus time |
+| Social | days since the last force open | a social media force open |
+| Mornings | alarms finished in a row | going back to sleep, a shortcut, switching the phone off |
+| Sleep | nights without forcing the phone open | the night screen's force bypass |
 
 **Blocked tries don't break streaks.** Trying to open status outside your rules, WhatsApp during a
-lockout, or TikTok, Shorts or Instagram outside your times just blocks you with a quote and is
-counted in the report.
+lockout or after the quick check, social apps outside your times, or apps at night just blocks you
+with a quote and is counted in the report.
+
+## WhatsApp focus times
+WhatsApp card → **Focus times** (password). Add as many as you like, e.g. *Morning devotion*
+05:30–07:00, *Lunch* 13:00–14:00. Each has a name, start, end, days and a **quick check** (default 10 min).
+
+- During a focus time WhatsApp works for the quick check, counted only while WhatsApp is on screen
+  (so you can check twice for 5 minutes). Then it closes until the focus time ends. Calls always come through.
+- **Open anyway…**: wait (10 s the first time, 20 s the second, 30 s…), then WhatsApp opens for
+  2 minutes and closes again. Each one resets the WhatsApp streak and breaks today's general streak.
+  The minutes and the wait are set on the same screen.
+- Status rules still apply on top. The report shows focus-time minutes, tries and opens anyway.
 
 ## Account
 Home screen → **Account**: your name (used in partner emails) and the password. One password protects every setting (status, social media, sleep,

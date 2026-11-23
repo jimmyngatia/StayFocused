@@ -1,52 +1,69 @@
 package com.personal.statusguard
 
 import android.accessibilityservice.AccessibilityService
+import android.app.KeyguardManager
 import android.content.Intent
 import android.os.Handler
 import android.os.SystemClock
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 
 /**
  * Closes the ways out of a running alarm and of sleep time.
- * - The power menu (hold the power button): closed straight away while an alarm is running and
- *   during sleep time, so "Power off" and "Restart" can't be tapped. (Holding power + volume down
- *   for about 10 seconds forces a restart; no app can stop that. It still counts as switched off.)
+ * - The power menu: closed straight away while an alarm is running and during sleep time, so
+ *   "Power off" and "Restart" can't be tapped. (Holding power + volume down for about 10 seconds
+ *   forces a restart; no app can stop that. It still counts as switched off.)
  * - While an alarm is running: the notification bar is closed as soon as it's pulled down
  *   (its "Active apps → Stop" would kill the alarm), and Android Settings sends you back to the alarm
  *   (that's where permissions are removed and apps force-stopped).
+ * The lock screen and its PIN pad are never touched: unlocking is needed for the alarm's scan.
  */
 class EscapeGuard(private val service: AccessibilityService, private val handler: Handler) {
     private val sleep = SleepStore(service)
+    private val keyguard = service.getSystemService(KeyguardManager::class.java)
+    private var lastLook = 0L
     private var lastAction = 0L
 
     /** Called for every accessibility event. Returns true if it closed something. */
     fun onEvent(event: AccessibilityEvent, pkg: String): Boolean {
-        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return false
-        val alarm = AlarmService.phase != null
+        if (pkg != SYSTEM_UI && pkg !in SETTINGS) return false
+        // The notification bar only sends "content changed" events here, and lots of them: look at most every 250 ms.
+        val now = SystemClock.elapsedRealtime()
+        if (pkg == SYSTEM_UI && event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && now - lastLook < 250) return false
+        lastLook = now
+        val alarm = alarmRunning()
         if (!alarm && !sleep.isEnforcing()) return false
-
-        if (pkg == SYSTEM_UI) {
-            val words = (event.text.joinToString(" ") + " " + (event.contentDescription ?: "")).trim()
-            val name = event.className?.toString() ?: ""
-            Log.d(StatusGuardService.TAG, "escape: systemui class=$name text=$words")
-            if (isPowerMenu(name, words)) return act("power menu") { service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK) }
-            if (alarm && isShade(words)) return act("notification bar") { closeShade() }
-        }
-        if (alarm && pkg in SETTINGS) return act("settings") { backToAlarm() }
-        return false
+        return look(alarm)
     }
 
-    /** The power menu: a System UI dialog with Power off / Restart. */
-    private fun isPowerMenu(name: String, words: String) =
-        name.contains("GlobalActions", ignoreCase = true) ||
-            POWER_WORDS.any { words.contains(it, ignoreCase = true) }
+    private fun alarmRunning() = AlarmService.phase != null
 
-    /** The notification bar or quick settings, pulled down. */
-    private fun isShade(words: String) = SHADE_WORDS.any { words.contains(it, ignoreCase = true) }
+    /** Looks at the window in front and closes it if it's a way out. Returns true if it did. */
+    private fun look(alarm: Boolean): Boolean {
+        val front = service.rootInActiveWindow ?: return false
+        val pkg = front.packageName?.toString()
+        return when {
+            pkg == SYSTEM_UI && isPowerMenu(front) -> act("power menu") { service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK) }
+            // Unlocked, System UI in front: the notification bar, quick settings or one of their pop-ups.
+            alarm && pkg == SYSTEM_UI && !keyguard.isKeyguardLocked -> act("notification bar") { closeShade() }
+            alarm && pkg in SETTINGS -> act("settings") { backToAlarm() }
+            else -> false
+        }
+    }
+
+    /** The power menu: Power off / Restart buttons. */
+    private fun isPowerMenu(root: AccessibilityNodeInfo) =
+        POWER_WORDS.any { word -> root.findAccessibilityNodeInfosByText(word).any { it.isVisibleToUser } }
 
     private fun closeShade() {
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
+        // A pop-up from the bar (e.g. "Active apps") needs Back as well.
+        handler.postDelayed({
+            if (alarmRunning() && service.rootInActiveWindow?.packageName?.toString() == SYSTEM_UI && !keyguard.isKeyguardLocked) {
+                service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+            }
+        }, 400)
     }
 
     private fun backToAlarm() {
@@ -57,34 +74,24 @@ class EscapeGuard(private val service: AccessibilityService, private val handler
         }, 800)
     }
 
-    /** Runs [action] (at most every 300 ms: events come in bursts). Always returns true. */
+    /** Runs [action] (at most every 300 ms), then looks again a moment later. Always returns true. */
     private fun act(what: String, action: () -> Unit): Boolean {
         val now = SystemClock.elapsedRealtime()
         if (now - lastAction > 300) {
             lastAction = now
             Log.d(StatusGuardService.TAG, "escape: closed $what")
             action()
-            // Some menus open in two steps: check once more.
-            handler.postDelayed({ recheck() }, 400)
+            handler.postDelayed({
+                val alarm = alarmRunning()
+                if (alarm || sleep.isEnforcing()) look(alarm)
+            }, 700)
         }
         return true
-    }
-
-    /** Closes a power menu or shade that is still showing a moment later. */
-    private fun recheck() {
-        val alarm = AlarmService.phase != null
-        if (!alarm && !sleep.isEnforcing()) return
-        val front = service.rootInActiveWindow ?: return
-        val pkg = front.packageName?.toString()
-        if (pkg == SYSTEM_UI && POWER_WORDS.any { front.findAccessibilityNodeInfosByText(it).isNotEmpty() }) {
-            service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-        } else if (alarm && pkg in SETTINGS) backToAlarm()
     }
 
     companion object {
         const val SYSTEM_UI = "com.android.systemui"
         val SETTINGS = setOf("com.android.settings", "com.android.settings.intelligence")
         private val POWER_WORDS = listOf("Power off", "Restart", "Reboot", "Shut down")
-        private val SHADE_WORDS = listOf("Notification shade", "Quick settings", "Active apps")
     }
 }
