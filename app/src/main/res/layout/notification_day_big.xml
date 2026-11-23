@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- My day notification, pulled open: the summary and the list. Tap a point to tick it. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dayTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My day"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification.Title" />
+
+    <TextView
+        android:id="@+id/daySummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification" />
+
+    <LinearLayout
+        android:id="@+id/dayList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="vertical" />
+
+    <TextView
+        android:id="@+id/dayMore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@android:style/TextAppearance.Material.Notification" />
+</LinearLayout>

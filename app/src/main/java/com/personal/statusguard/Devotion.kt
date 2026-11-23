@@ -206,6 +206,8 @@ class DevotionGuard(private val service: AccessibilityService, private val handl
     private var covering = false
     private var lastTry = 0L
     private var lastLook = 0L
+    private var runs = 0
+    private var widgetDay: LocalDate? = null
 
     /** Whether it's devotion time (looked up every 5 s) and the free apps (every minute): not on every event. */
     private var active: LocalDate? = null
@@ -247,6 +249,11 @@ class DevotionGuard(private val service: AccessibilityService, private val handl
             }
             store.settleMissed()
             ask(openScreen = power.isInteractive && !keyguard.isKeyguardLocked)
+            // The My day widget: fresh phone time every 5 minutes, and a new list after midnight.
+            if (++runs % 10 == 0 || LocalDate.now() != widgetDay) {
+                widgetDay = LocalDate.now()
+                PlannerWidget.refresh(service)
+            }
             handler.postDelayed(this, 30_000)
         }
     }

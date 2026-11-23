@@ -64,6 +64,9 @@ class WeeklyReport(
     val grade: String,
     val gradeComment: String,
     val whatsappStreak: Int,
+    val planLog: List<String?>, // per day: "4 of 6 done: ✓ Study, ✗ Call mum", or null if nothing planned
+    val planDone: Int,
+    val planTotal: Int,
     val devotionLog: List<String?>, // per day: what I read, "not done", or null (no devotion that day)
     val devotionDone: Int,
     val devotionDays: Int, // days that had devotion time or a log
@@ -118,6 +121,12 @@ class WeeklyReport(
             append("My devotion streak is ${if (devotionStreak == 1) "1 day" else "$devotionStreak days"}. ")
             if (devotionTries > 0) append("During devotion time other apps were closed on me $devotionTries times. ")
             if (devotionExtras > 0) append("I opened them anyway $devotionExtras times.")
+        }
+
+        if (planTotal > 0) parts += "My days" to buildString {
+            append("I planned $planTotal things this week and did $planDone of them.")
+            val lines = days.indices.mapNotNull { i -> planLog[i]?.let { "${dayName(i)}: $it" } }
+            if (lines.isNotEmpty()) append("\n" + lines.joinToString("\n"))
         }
 
         parts += "Phone" to if (hasPhoneData && phoneTotal > 0) {
@@ -285,6 +294,7 @@ class WeeklyReport(
             "Mornings" -> R.drawable.ic_sun
             "Highlights" -> R.drawable.ic_flag
             "Devotions" -> R.drawable.ic_book
+            "My days" -> R.drawable.ic_check
             "Sleep" -> R.drawable.ic_moon
             "Social media" -> R.drawable.ic_play
             else -> R.drawable.ic_flame
@@ -298,6 +308,7 @@ class WeeklyReport(
         return "Status Guard weekly report" + (if (name == "The user") "" else " for $name") + " · $rangeText\n\n" +
             "Grade $grade ($score/100): $gradeComment\n\n" +
             "My streak: ${days(overallStreak)} with every rule kept ($cleanDays of the last 7 days)\n" +
+            (if (planTotal > 0) "My days: $planDone of $planTotal planned things done\n" else "") +
             (if (hasDevotion) "Devotions: $devotionDone of $devotionDays days  ·  streak ${days(devotionStreak)}\n" else "") +
             "Mornings: $alarmStreak in a row\n" +
             "WhatsApp: ${days(whatsappStreak)}  ·  Sleep: ${days(sleepStreak)}" +
@@ -357,6 +368,7 @@ class WeeklyReport(
             var score = 100
             score -= minOf(40, 4 * (statusAttempts + sleepAttempts + social.tries + focusTries).toInt())
             score -= 8 * focusExtras.toInt()
+            val plans = PlanStore(context).let { p -> week.map { p.items(it) } }
             val devotion = DevotionStore(context)
             devotion.settleMissed()
             val devotionLog = week.map { d ->
@@ -419,6 +431,12 @@ class WeeklyReport(
                 grade = grade,
                 gradeComment = comment,
                 whatsappStreak = h.whatsappStreak(),
+                planLog = plans.map { list ->
+                    if (list.isEmpty()) null
+                    else "${list.count { it.done }} of ${list.size} done: " + list.joinToString(", ") { (if (it.done) "✓ " else "✗ ") + it.text }
+                },
+                planDone = plans.sumOf { l -> l.count { it.done } },
+                planTotal = plans.sumOf { it.size },
                 devotionLog = devotionLog,
                 devotionDone = week.count { devotion.isDone(it) },
                 devotionDays = devotionDays,

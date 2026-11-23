@@ -154,6 +154,22 @@ breaks it for that day. Under it are the four area streaks, and **each slip only
 lockout or after the quick check, social apps outside your times, or apps at night just blocks you
 with a quote and is counted in the report.
 
+## My day (planner)
+Home screen → **My day**, the bedtime reminder ("plan tomorrow"), or My words → **Plan tomorrow**.
+
+- **Today / Tomorrow**: a list of points, each with an optional time (no reminders). Points with a
+  time come first, in time order. Tap to tick, long-press to change the text or time, or delete.
+- **Leftovers**: yesterday's unticked points are offered once: *Move to today* or *No thanks*.
+- The old "Tomorrow, I will…" line is turned into points (one per comma) the first time a day is opened.
+- **In the notifications** (on by default, switch on the My day screen): folded it shows
+  *phone time · devotion · 3 of 5 done*; pulled open it shows the list and a tap ticks a point.
+  Swiping it away hides it until tomorrow.
+- **Home screen widget** "My day" (on phones that support widgets; Android Go phones don't): the same
+  summary and list with tick boxes; the arrow folds the list away, + adds a point. Resizable.
+- The alarm's "All done!" screen and the home header show what's still to do today.
+- **Report**: a *My days* section: "I planned 25 things and did 18", then each day with ✓ and ✗.
+  Not part of any streak.
+
 ## Devotion time
 Devotion card → **Devotion time settings** (password): start, end (e.g. 07:00–10:00), days, a
 **quick check** (default 10 min) and the **apps that stay free** (your Bible app, notes...).

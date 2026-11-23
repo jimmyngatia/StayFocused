@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="My day" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_m"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/todayButton" style="@style/SecondaryButton" android:layout_width="0dp" android:layout_weight="1" android:text="Today" />
+
+            <Button android:id="@+id/tomorrowButton" style="@style/SecondaryButton" android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="@dimen/space_s" android:text="Tomorrow" />
+        </LinearLayout>
+
+        <TextView android:id="@+id/dateText" style="@style/Subtitle" />
+
+        <LinearLayout android:id="@+id/leftoverCard" style="@style/Card.First" android:visibility="gone">
+
+            <TextView android:id="@+id/leftoverText" style="@style/Body" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button android:id="@+id/leftoverMove" style="@style/SecondaryButton" android:layout_width="wrap_content" android:text="Move to today" />
+
+                <Button android:id="@+id/leftoverDismiss" style="@style/SecondaryButton" android:layout_width="wrap_content" android:layout_marginStart="@dimen/space_l" android:text="No thanks" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView android:id="@+id/summaryText" style="@style/Heading" android:drawableStart="@drawable/ic_check" />
+
+            <LinearLayout
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <EditText
+                android:id="@+id/input"
+                style="@style/Field"
+                android:layout_marginTop="@dimen/space_m"
+                android:hint="Add a point, e.g. Study for exam"
+                android:imeOptions="actionDone"
+                android:inputType="textCapSentences" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button android:id="@+id/timeButton" style="@style/SecondaryButton" android:drawableStart="@drawable/ic_alarm" android:layout_width="0dp" android:layout_weight="1" android:text="Add a time (optional)" />
+
+                <Button android:id="@+id/addButton" style="@style/PrimaryButton" android:layout_width="wrap_content" android:drawableStart="@drawable/ic_add" android:text="Add" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/Caption"
+                android:layout_marginTop="@dimen/space_m"
+                android:text="Tap a point to tick it. Long-press to change or delete it." />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <CheckBox
+                android:id="@+id/notificationSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show My day in my notifications" />
+
+            <TextView
+                style="@style/Caption"
+                android:text="Pull it open to see today's list and tick points from there. Swipe it away to hide it until tomorrow. If your phone supports widgets, you can also add the My day widget to your home screen." />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

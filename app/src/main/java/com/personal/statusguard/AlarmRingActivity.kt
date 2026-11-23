@@ -335,7 +335,7 @@ class AlarmRingActivity : Activity() {
             "All done!",
             "$streak",
             (if (streak == 1) "morning in a row" else "mornings in a row") +
-                "\n\n" + (intention?.let { "Today you said you'd:\n$it" } ?: "Have a great day!"),
+                "\n\n" + (intention?.let { "Today you planned:\n$it" } ?: "Have a great day!"),
             "Let's go",
         )
     }

@@ -34,6 +34,7 @@ class MainActivity : Activity() {
         button(R.id.focusButton) { withPassword { open(FocusTimesActivity::class.java) } }
         button(R.id.devotionButton) { withPassword { open(DevotionActivity::class.java) } }
         button(R.id.devotionLogButton) { open(DevotionLogActivity::class.java) }
+        button(R.id.planButton) { open(PlannerActivity::class.java) }
         button(R.id.passwordButton) { withPassword { open(PasswordActivity::class.java) } }
     }
 
@@ -52,6 +53,18 @@ class MainActivity : Activity() {
         val intention = words.todaysIntention()
         findViewById<View>(R.id.intentionText).visibility = if (intention == null) View.GONE else View.VISIBLE
         text(R.id.intentionText, "Today: $intention")
+        findViewById<View>(R.id.intentionText).setOnClickListener { startActivity(PlannerActivity.intent(this)) }
+
+        // My day
+        val plan = PlanStore(this)
+        val planToday = plan.items(LocalDate.now())
+        val nextPoint = planToday.firstOrNull { !it.done }
+        text(
+            R.id.planText,
+            if (planToday.isEmpty()) "Nothing planned for today yet."
+            else plan.summary(LocalDate.now()) + (nextPoint?.let { "\nNext: " + (it.timeText()?.let { t -> "$t " } ?: "") + it.text } ?: "")
+        )
+        PlannerWidget.refresh(this)
 
         // Streak
         findViewById<FrameLayout>(R.id.streakBox).apply {

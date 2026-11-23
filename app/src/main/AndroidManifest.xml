@@ -130,6 +130,25 @@
             android:label="Devotion time" />
 
         <activity
+            android:name=".PlannerActivity"
+            android:exported="false"
+            android:label="My day"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- The "My day" home screen widget -->
+        <receiver
+            android:name=".PlannerWidget"
+            android:exported="false"
+            android:label="My day">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/planner_widget_info" />
+        </receiver>
+
+        <activity
             android:name=".FocusTimesActivity"
             android:exported="false"
             android:excludeFromRecents="true"

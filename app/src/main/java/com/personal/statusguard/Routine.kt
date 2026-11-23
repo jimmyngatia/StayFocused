@@ -16,7 +16,7 @@ import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 /**
- * Two gentle reminders: 15 minutes before bedtime ("tomorrow's alarm + your intention"),
+ * Two gentle reminders: 15 minutes before bedtime ("tomorrow's alarm + plan tomorrow"),
  * and the weekly report on the chosen day and time (Sunday 19:00 unless changed), which is
  * also when it's emailed.
  */
@@ -86,8 +86,8 @@ object Routine {
             when (intent.action) {
                 ACTION_BEDTIME -> notify(
                     context, 10, "Bedtime in 15 minutes",
-                    "${nextAlarmText(context)}\nTap to write one thing you'll do tomorrow.",
-                    Intent(context, IntentionActivity::class.java)
+                    "${nextAlarmText(context)}\nTap to plan tomorrow: what do you want to do?",
+                    PlannerActivity.intent(context, tomorrow = true)
                 )
                 ACTION_WEEKLY -> {
                     val report = WeeklyReport.build(context)

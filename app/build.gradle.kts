@@ -11,8 +11,8 @@ android {
         applicationId = "com.personal.statusguard"
         minSdk = 31 // Android 12
         targetSdk = 36
-        versionCode = 23
-        versionName = "2.15"
+        versionCode = 24
+        versionName = "2.16"
     }
 
     compileOptions {

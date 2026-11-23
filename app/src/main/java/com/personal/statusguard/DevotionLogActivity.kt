@@ -40,6 +40,7 @@ class DevotionLogActivity : Activity() {
             }
             store.logDone(today, text)
             DevotionStore.cancelAsk(this)
+            PlannerWidget.refresh(this)
             Toast.makeText(this, "Saved. Devotion streak: ${store.streak()}", Toast.LENGTH_LONG).show()
             finish()
         }

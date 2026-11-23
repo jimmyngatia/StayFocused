@@ -19,7 +19,7 @@ class MyWordsActivity : Activity() {
         words = Words(this)
 
         findViewById<Button>(R.id.intentionButton).setOnClickListener {
-            startActivity(Intent(this, IntentionActivity::class.java))
+            startActivity(PlannerActivity.intent(this, tomorrow = true))
         }
         findViewById<Button>(R.id.addWhyButton).setOnClickListener {
             add(R.id.whyInput) { words.whys = words.whys + it }
@@ -46,7 +46,7 @@ class MyWordsActivity : Activity() {
     private fun refresh() {
         val intention = words.todaysIntention()
         findViewById<TextView>(R.id.intentionText).text = intention?.let { "Today: $it" } ?: "Nothing written for today."
-        findViewById<Button>(R.id.intentionButton).text = "Write tomorrow's intention"
+        findViewById<Button>(R.id.intentionButton).text = "Plan tomorrow (My day)"
 
         fill(R.id.whyList, words.whys) { item -> words.whys = words.whys - item }
         fill(R.id.quoteList, words.quotes) { item -> words.quotes = words.quotes - item }
