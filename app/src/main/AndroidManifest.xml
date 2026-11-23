@@ -107,6 +107,28 @@
             android:taskAffinity="com.personal.statusguard.focus"
             android:theme="@style/CoverTheme" />
 
+        <!-- Covers other apps during devotion time once the quick check is used up. -->
+        <activity
+            android:name=".DevotionBlockActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.personal.statusguard.devotion"
+            android:theme="@style/CoverTheme" />
+
+        <activity
+            android:name=".DevotionLogActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:label="My devotion" />
+
+        <activity
+            android:name=".DevotionActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:label="Devotion time" />
+
         <activity
             android:name=".FocusTimesActivity"
             android:exported="false"

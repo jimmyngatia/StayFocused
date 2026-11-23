@@ -50,6 +50,13 @@
 
         <!-- Report -->
         <LinearLayout style="@style/Card">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_book" android:text="Devotion" />
+            <TextView android:id="@+id/devotionText" style="@style/Body" />
+            <Button android:id="@+id/devotionLogButton" style="@style/LinkButton" android:text="Log today's devotion" />
+            <Button android:id="@+id/devotionButton" style="@style/LockedLinkButton" android:text="Devotion time settings" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
             <TextView style="@style/Heading" android:drawableStart="@drawable/ic_chart" android:text="Today" />
             <TextView android:id="@+id/todayText" style="@style/Body" />
             <Button android:id="@+id/reportButton" style="@style/LinkButton" android:text="Weekly report" />

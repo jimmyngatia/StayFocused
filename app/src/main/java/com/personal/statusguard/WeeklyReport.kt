@@ -64,6 +64,13 @@ class WeeklyReport(
     val grade: String,
     val gradeComment: String,
     val whatsappStreak: Int,
+    val devotionLog: List<String?>, // per day: what I read, "not done", or null (no devotion that day)
+    val devotionDone: Int,
+    val devotionDays: Int, // days that had devotion time or a log
+    val devotionExtras: Long, // "Open anyway" during devotion time
+    val devotionTries: Long,
+    val devotionStreak: Int,
+    val hasDevotion: Boolean,
     val sleepStreak: Int,
     val focusSeconds: Long, // WhatsApp time used during focus times
     val focusTries: Long, // WhatsApp covered during focus times
@@ -103,6 +110,15 @@ class WeeklyReport(
         val parts = mutableListOf<Pair<String, String>>()
 
         parts += "Highlights" to highlights()
+
+        if (hasDevotion) parts += "Devotions" to buildString {
+            append(if (devotionDays == 0) "I had no devotion days this week. " else "I did my devotions on $devotionDone of $devotionDays days. ")
+            val lines = days.indices.mapNotNull { i -> devotionLog[i]?.let { "${dayName(i)}: $it" } }
+            if (lines.isNotEmpty()) append("\n" + lines.joinToString("\n") + "\n")
+            append("My devotion streak is ${if (devotionStreak == 1) "1 day" else "$devotionStreak days"}. ")
+            if (devotionTries > 0) append("During devotion time other apps were closed on me $devotionTries times. ")
+            if (devotionExtras > 0) append("I opened them anyway $devotionExtras times.")
+        }
 
         parts += "Phone" to if (hasPhoneData && phoneTotal > 0) {
             val most = phonePerDay.indices.maxBy { phonePerDay[it] }
@@ -268,6 +284,7 @@ class WeeklyReport(
             "WhatsApp status" -> R.drawable.ic_chat
             "Mornings" -> R.drawable.ic_sun
             "Highlights" -> R.drawable.ic_flag
+            "Devotions" -> R.drawable.ic_book
             "Sleep" -> R.drawable.ic_moon
             "Social media" -> R.drawable.ic_play
             else -> R.drawable.ic_flame
@@ -281,6 +298,7 @@ class WeeklyReport(
         return "Status Guard weekly report" + (if (name == "The user") "" else " for $name") + " · $rangeText\n\n" +
             "Grade $grade ($score/100): $gradeComment\n\n" +
             "My streak: ${days(overallStreak)} with every rule kept ($cleanDays of the last 7 days)\n" +
+            (if (hasDevotion) "Devotions: $devotionDone of $devotionDays days  ·  streak ${days(devotionStreak)}\n" else "") +
             "Mornings: $alarmStreak in a row\n" +
             "WhatsApp: ${days(whatsappStreak)}  ·  Sleep: ${days(sleepStreak)}" +
             (if (social.hasData) "  ·  Social media: ${days(socialStreak)}" else "") +
@@ -339,6 +357,20 @@ class WeeklyReport(
             var score = 100
             score -= minOf(40, 4 * (statusAttempts + sleepAttempts + social.tries + focusTries).toInt())
             score -= 8 * focusExtras.toInt()
+            val devotion = DevotionStore(context)
+            devotion.settleMissed()
+            val devotionLog = week.map { d ->
+                when {
+                    devotion.isDone(d) -> devotion.entry(d) ?: "done"
+                    devotion.isMissed(d) -> "not done"
+                    d == today && devotion.isScheduled(d) -> "not logged yet"
+                    else -> null
+                }
+            }
+            val devotionDays = week.count { devotion.isScheduled(it) || devotion.isDone(it) }
+            val devotionMissed = week.count { devotion.isMissed(it) }
+            val devotionExtras = total(week, History.DEV_EXTRA)
+            score -= 8 * devotionMissed + 8 * devotionExtras.toInt()
             score -= 8 * social.forceOpens.toInt()
             score -= 10 * (alarmsStopped + alarmsEscaped).toInt()
             val backToSleepDays = week.count { h.get(it, History.AWAKE_MISSED) > 0 }
@@ -361,7 +393,7 @@ class WeeklyReport(
                 statusMinutesPerDay = week.map { h.get(it, History.STATUS_SECONDS) / 60 },
                 attemptsPerDay = week.indices.map { i ->
                     h.get(week[i], History.STATUS_ATTEMPTS) + h.get(week[i], History.SLEEP_ATTEMPTS) +
-                        h.get(week[i], History.WA_FOCUS_TRIES) + social.triesPerDay[i]
+                        h.get(week[i], History.WA_FOCUS_TRIES) + h.get(week[i], History.DEV_TRIES) + social.triesPerDay[i]
                 },
                 topApps = topApps,
                 hasPhoneData = PhoneUsage.hasAccess(context),
@@ -387,6 +419,13 @@ class WeeklyReport(
                 grade = grade,
                 gradeComment = comment,
                 whatsappStreak = h.whatsappStreak(),
+                devotionLog = devotionLog,
+                devotionDone = week.count { devotion.isDone(it) },
+                devotionDays = devotionDays,
+                devotionExtras = devotionExtras,
+                devotionTries = total(week, History.DEV_TRIES),
+                devotionStreak = devotion.streak(),
+                hasDevotion = devotion.block != null || week.any { devotion.isDone(it) },
                 sleepStreak = h.sleepStreak(),
                 focusSeconds = total(week, History.WA_FOCUS_SECONDS),
                 focusTries = focusTries,

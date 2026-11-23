@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="My devotion" />
+
+        <TextView android:id="@+id/dateText" style="@style/Subtitle" />
+
+        <LinearLayout style="@style/Card.First">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_book" android:text="What did you read or study today?" />
+
+            <EditText
+                android:id="@+id/input"
+                style="@style/Field"
+                android:hint="e.g. Deuteronomy 2–3, or Judges 1–2"
+                android:inputType="textCapSentences|textMultiLine" />
+
+            <TextView
+                style="@style/Caption"
+                android:layout_marginTop="@dimen/space_m"
+                android:text="It goes into your weekly report, so the friends who keep you accountable see it." />
+        </LinearLayout>
+
+        <Button android:id="@+id/saveButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_xl" android:text="I did my devotions" />
+
+        <Button android:id="@+id/notDoneButton" style="@style/LinkButton" android:text="I didn't today" />
+
+        <Button android:id="@+id/laterButton" style="@style/LinkButton" android:text="Not yet, ask me later" />
+
+        <TextView android:id="@+id/streakText" style="@style/Caption" android:layout_marginTop="@dimen/space_l" />
+    </LinearLayout>
+</ScrollView>

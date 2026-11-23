@@ -9,7 +9,7 @@
 
     <LinearLayout style="@style/CoverPage" android:layout_height="match_parent">
 
-        <ImageView style="@style/CoverIcon" android:src="@drawable/ic_sun" />
+        <ImageView android:id="@+id/coverIcon" style="@style/CoverIcon" android:src="@drawable/ic_sun" />
 
         <TextView android:id="@+id/titleText" style="@style/CoverTitle" />
 

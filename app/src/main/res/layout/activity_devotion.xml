@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="Devotion time" />
+
+        <TextView
+            style="@style/Subtitle"
+            android:text="During devotion time your Bible and the apps you choose stay free. Every other app, WhatsApp included, shares one short quick check, then closes until the time ends. Afterwards you're asked what you read until you answer, and it goes into your weekly report." />
+
+        <LinearLayout style="@style/Card.First">
+
+            <CheckBox
+                android:id="@+id/enabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Devotion time is on"
+                android:textSize="@dimen/text_heading"
+                android:textStyle="bold" />
+
+            <TextView style="@style/Heading" android:layout_marginTop="@dimen/space_l" android:text="Starts" />
+
+            <TimePicker
+                android:id="@+id/start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:timePickerMode="spinner" />
+
+            <TextView style="@style/Heading" android:layout_marginTop="@dimen/space_l" android:text="Ends" />
+
+            <TimePicker
+                android:id="@+id/end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:timePickerMode="spinner" />
+
+            <TextView style="@style/FieldLabel" android:text="Quick check for all other apps together (minutes)" />
+            <EditText android:id="@+id/quick" style="@style/Field" android:inputType="number" />
+
+            <TextView style="@style/Heading" android:layout_marginTop="@dimen/space_l" android:text="Days" />
+
+            <LinearLayout
+                android:id="@+id/days"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_book" android:text="Apps that stay free" />
+
+            <TextView android:id="@+id/appsText" style="@style/Body" />
+
+            <Button android:id="@+id/chooseAppsButton" style="@style/LinkButton" android:text="Choose apps…" />
+
+            <TextView
+                style="@style/Caption"
+                android:layout_marginTop="@dimen/space_m"
+                android:text="Open anyway uses the same minutes and wait as WhatsApp focus times. It breaks today's general streak." />
+        </LinearLayout>
+
+        <Button android:id="@+id/saveButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_xl" android:text="Save" />
+    </LinearLayout>
+</ScrollView>

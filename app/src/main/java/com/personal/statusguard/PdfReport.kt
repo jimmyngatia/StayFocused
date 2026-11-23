@@ -65,6 +65,7 @@ object PdfReport {
         w.space(10f)
         w.tiles(
             listOf(
+                Tile("${r.devotionStreak}", "Devotion: days logged in a row", Ink.PURPLE),
                 Tile("${r.whatsappStreak}", "WhatsApp: days without an extra open", Ink.PURPLE),
                 Tile("${r.socialStreak}", "Social media: days without a force open", Ink.PURPLE),
                 Tile("${r.alarmStreak}", "Mornings in a row", Ink.PURPLE),

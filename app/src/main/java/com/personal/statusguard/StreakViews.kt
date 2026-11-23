@@ -11,10 +11,11 @@ import android.widget.TextView
 /** One streak: icon, name and days in a row. */
 class Streak(val icon: Int, val name: String, val days: Int, val unit: String? = null)
 
-/** The four area streaks, read fresh from history. Each slip only costs its own streak (and the general one). */
+/** The five area streaks, read fresh from history. Each slip only costs its own streak (and the general one). */
 fun currentStreaks(context: Context): List<Streak> {
     val h = History(context)
     return listOf(
+        Streak(R.drawable.ic_book, "Devotion", DevotionStore(context).streak()),
         Streak(R.drawable.ic_chat, "WhatsApp", h.whatsappStreak()),
         Streak(R.drawable.ic_play, "Social", h.socialStreak()),
         Streak(R.drawable.ic_alarm, "Mornings", h.alarmStreak, unit = "in a row"),
@@ -46,7 +47,7 @@ fun streakBlock(context: Context): LinearLayout {
         })
         addView(TextView(context, null, 0, R.style.Caption).apply {
             text = when {
-                overall == 0 -> "Keep every streak alive today to start it again: no force opens, no extra WhatsApp opens, no alarm shortcuts."
+                overall == 0 -> "Keep every streak alive today to start it again: devotions logged, no force opens, no open anyway, no alarm shortcuts."
                 overall >= 7 -> "Every streak held. Brilliant run, keep it alive!"
                 else -> "Days where every streak held. Any slip resets it to 0."
             }

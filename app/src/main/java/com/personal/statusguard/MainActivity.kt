@@ -32,6 +32,8 @@ class MainActivity : Activity() {
         button(R.id.sleepButton) { withPassword { open(SleepActivity::class.java) } }
         button(R.id.socialButton) { withPassword { open(SocialSettingsActivity::class.java) } }
         button(R.id.focusButton) { withPassword { open(FocusTimesActivity::class.java) } }
+        button(R.id.devotionButton) { withPassword { open(DevotionActivity::class.java) } }
+        button(R.id.devotionLogButton) { open(DevotionLogActivity::class.java) }
         button(R.id.passwordButton) { withPassword { open(PasswordActivity::class.java) } }
     }
 
@@ -57,14 +59,32 @@ class MainActivity : Activity() {
             addView(streakBlock(this@MainActivity))
         }
 
-        // Today
+        // Devotion
         val today = LocalDate.now()
+        val devotion = DevotionStore(this)
+        devotion.settleMissed()
+        val devBlock = devotion.block
+        text(
+            R.id.devotionText,
+            (if (devBlock == null || !devBlock.enabled) "No devotion time set yet." else "Devotion time ${devBlock.startText()}–${devBlock.endText()}, ${devBlock.daysText().lowercase()}") +
+                "\n" + when {
+                    devotion.isDone(today) -> "Today: ${devotion.entry(today)} ✓"
+                    devotion.isMissed(today) -> "Today: not done"
+                    devotion.current() != null -> {
+                        val left = ((devBlock?.quickMinutes ?: 0) * 60 - devotion.usedSeconds(today)).coerceAtLeast(0)
+                        "Devotion time now. Quick check left for other apps: ${formatSeconds(left.toLong())}"
+                    }
+                    else -> "Today: not logged yet"
+                }
+        )
+
+        // Today
         val social = SocialPrefs(this)
         val socialApps = SocialApp.all(this)
         val socialTries = socialApps.sumOf { history.get(today, it.triesField) }
         val tries = history.get(today, History.STATUS_ATTEMPTS) + history.get(today, History.SLEEP_ATTEMPTS) +
-            history.get(today, History.WA_FOCUS_TRIES) + socialTries
-        val forces = socialApps.sumOf { history.get(today, it.forceField) } + history.get(today, History.WA_EXTRA)
+            history.get(today, History.WA_FOCUS_TRIES) + history.get(today, History.DEV_TRIES) + socialTries
+        val forces = socialApps.sumOf { history.get(today, it.forceField) } + history.get(today, History.WA_EXTRA) + history.get(today, History.DEV_EXTRA)
         val phone = PhoneUsage.days(this, today, today)[today]?.totalMs
         text(
             R.id.todayText, (phone?.let { "${PhoneUsage.format(it)} on phone  ·  " } ?: "") + "$tries blocked tries" +

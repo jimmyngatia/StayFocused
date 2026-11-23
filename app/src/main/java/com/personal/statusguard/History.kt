@@ -30,6 +30,22 @@ class History(context: Context) {
         sp.edit().putString(date.toString(), d.toString()).apply()
     }
 
+    /** Saves a text (or removes it, if null) under [field] on [date]. */
+    fun setText(date: LocalDate, field: String, value: String?) {
+        val d = day(date)
+        if (value == null) d.remove(field) else d.put(field, value)
+        sp.edit().putString(date.toString(), d.toString()).apply()
+    }
+
+    fun text(date: LocalDate, field: String): String? = day(date).optString(field, "").ifEmpty { null }
+
+    /** Sets a number (0 removes it) under [field] on [date]. */
+    fun set(date: LocalDate, field: String, value: Long) {
+        val d = day(date)
+        if (value == 0L) d.remove(field) else d.put(field, value)
+        sp.edit().putString(date.toString(), d.toString()).apply()
+    }
+
     /** Keeps the bigger of the saved and new value (Android forgets old phone-usage data). */
     fun keepMax(date: LocalDate, field: String, value: Long) {
         val d = day(date)
@@ -66,7 +82,7 @@ class History(context: Context) {
      * Blocked tries (status, WhatsApp focus times, social media, sleep time) are NOT slips:
      * the app just blocks you and counts them for the report.
      */
-    private val slipFields = listOf(SLEEP_EMERGENCY, ALARMS_STOPPED, ALARMS_ESCAPED, AWAKE_MISSED, WA_EXTRA)
+    private val slipFields = listOf(SLEEP_EMERGENCY, ALARMS_STOPPED, ALARMS_ESCAPED, AWAKE_MISSED, WA_EXTRA, DEV_MISSED, DEV_EXTRA)
 
     /** Did anything go wrong on [date]? Social force opens count for every app, even ones removed since. */
     fun slipped(date: LocalDate): Boolean {
@@ -188,6 +204,12 @@ class History(context: Context) {
         const val WA_FOCUS_SECONDS = "waFocusS" // WhatsApp time used during focus times (the quick check)
         const val WA_FOCUS_TRIES = "waFocusTries" // WhatsApp covered during a focus time
         const val WA_EXTRA = "waExtra" // "Open anyway" during a focus time: a slip
+        const val DEV_DONE = "devDone" // devotions done and logged
+        const val DEV_TEXT = "devText" // what I read, e.g. "Deuteronomy 2-3"
+        const val DEV_MISSED = "devMissed" // "I didn't today", or not answered by midnight: a slip
+        const val DEV_EXTRA = "devExtra" // "Open anyway" during devotion time: a slip
+        const val DEV_SECONDS = "devS" // time in other apps during devotion time (the quick check)
+        const val DEV_TRIES = "devTries" // an app covered during devotion time
         const val PHONE_MS = "phoneMs"
         const val UNLOCKS = "unlocks"
         const val SOCIAL = "social" // the social media streak

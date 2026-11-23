@@ -13,6 +13,8 @@ import android.view.accessibility.AccessibilityEvent
  *   screen as soon as status isn't allowed.
  * - Sleep time: the night screen covers everything except the allowed apps (see [SleepGuard]).
  *   WhatsApp and WhatsApp Business calls still come through.
+ * - Devotion time: the apps you choose stay free, the rest share a quick check; afterwards you're
+ *   asked what you read (see [DevotionGuard]).
  * - WhatsApp focus times: a short quick check, then WhatsApp closes until the focus time ends (see [FocusGuard]).
  * - Social media: TikTok, Instagram, YouTube Shorts and the apps you add share one daily pot (see [SocialGuard]).
  * - A running alarm and sleep time: the power menu, notification bar and Settings are closed (see [EscapeGuard]).
@@ -25,6 +27,7 @@ class StatusGuardService : AccessibilityService() {
     private lateinit var social: SocialGuard
     private lateinit var escape: EscapeGuard
     private lateinit var focus: FocusGuard
+    private lateinit var devotion: DevotionGuard
     private val handler = Handler(Looper.getMainLooper())
     private var currentScreen: String? = null
     private var wasOnStatus = false
@@ -48,6 +51,7 @@ class StatusGuardService : AccessibilityService() {
         social = SocialGuard(this, handler)
         escape = EscapeGuard(this, handler)
         focus = FocusGuard(this, handler)
+        devotion = DevotionGuard(this, handler).also { it.start() }
         sleepGuard = SleepGuard(this, handler).also { it.start() }
     }
 
@@ -64,6 +68,8 @@ class StatusGuardService : AccessibilityService() {
             if (isWhatsApp && name != null && name.startsWith("com.whatsapp")) currentScreen = name
             if (sleepGuard.check(pkg, currentScreen)) return
         }
+        // Devotion time: apps that aren't free close once the quick check is used up.
+        if (devotion.onEvent()) return
         // TikTok, Instagram and YouTube Shorts: handled separately in Social.kt.
         if (social.onEvent(pkg)) return
         if (!isWhatsApp) return
@@ -194,6 +200,7 @@ class StatusGuardService : AccessibilityService() {
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
         if (::sleepGuard.isInitialized) sleepGuard.stop()
+        if (::devotion.isInitialized) devotion.stop()
         super.onDestroy()
     }
 

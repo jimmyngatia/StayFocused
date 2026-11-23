@@ -144,6 +144,7 @@ breaks it for that day. Under it are the four area streaks, and **each slip only
 
 | Streak | Counts | Reset by |
 |---|---|---|
+| Devotion | days with devotions logged (days without devotion time don't break it) | "I didn't today", or no answer by midnight |
 | WhatsApp | days without opening anyway | "Open anyway" during a focus time |
 | Social | days since the last force open | a social media force open |
 | Mornings | alarms finished in a row | going back to sleep, a shortcut, switching the phone off |
@@ -152,6 +153,24 @@ breaks it for that day. Under it are the four area streaks, and **each slip only
 **Blocked tries don't break streaks.** Trying to open status outside your rules, WhatsApp during a
 lockout or after the quick check, social apps outside your times, or apps at night just blocks you
 with a quote and is counted in the report.
+
+## Devotion time
+Devotion card → **Devotion time settings** (password): start, end (e.g. 07:00–10:00), days, a
+**quick check** (default 10 min) and the **apps that stay free** (your Bible app, notes...).
+
+- **During it**: Phone, Clock, calls, the home screen and your chosen apps are free. Every other app,
+  WhatsApp included, shares the quick check (counted only while on screen), then closes until the
+  end. **Open anyway** works like WhatsApp focus times (same minutes and growing wait) and breaks
+  today's general streak.
+- **After it**: a notification "Did you do your devotions today?" stays until you answer, and the
+  log screen opens by itself when you unlock or use the phone, at most every 30 minutes
+  ("Not yet, ask me later" waits 30 minutes). Never during an alarm, sleep time or a call.
+- **The log**: one line, e.g. *Deuteronomy 2–3*. **I didn't today** is the honest answer: it resets the
+  devotion streak and breaks today's general streak. No answer by midnight counts the same. Doing it
+  later the same day? Log it and it replaces the "no". **Log today's devotion** on the home screen
+  works any day, also days without devotion time.
+- **Report**: a Devotions section first: "I did my devotions on 5 of 6 days", then each day's entry
+  (Monday: Deuteronomy 2–3...). The email message and PDF show it too.
 
 ## WhatsApp focus times
 WhatsApp card → **Focus times** (password). Add as many as you like, e.g. *Morning devotion*
