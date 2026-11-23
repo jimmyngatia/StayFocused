@@ -166,8 +166,9 @@ Home screen → **My day**, the bedtime reminder ("plan tomorrow"), or My words 
   Swiping it away hides it until tomorrow.
 - **On the home screen** (on by default, switch on the My day screen): a My day card drawn by the
   protection service, so it works on Android Go phones, which can't have widgets. It shows only while
-  the home screen is in front: summary, today's list with tick boxes, + to add, the arrow folds it,
-  drag the title up or down to move it.
+  the home screen is in front. Open, it's a square about half the screen wide: a ring (points done),
+  phone time, devotion, and today's points with tick boxes; + adds a point. The arrow folds it to a
+  small tile with just the ring (tap the tile to open it). Drag the title (or the tile) anywhere.
 - **Home screen widget** "My day" (on phones that support widgets; Android Go phones don't): the same
   summary and list with tick boxes; the arrow folds the list away, + adds a point. Resizable.
 - The alarm's "All done!" screen and the home header show what's still to do today.
