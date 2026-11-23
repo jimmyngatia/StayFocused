@@ -72,6 +72,9 @@ If steps can't be counted ("Physical activity" switched off), they are skipped b
 shortcut (morning streak back to 0).
 
 ### Awake watch (levels 2 to 4)
+Each alarm has an **Awake watch** switch (on by default). Switched off, the alarm is done as soon as
+its tasks are; the alarm list shows "NO AWAKE WATCH" next to the level.
+
 After the tasks, the alarm watches you for the minutes you set (at least 15, default 30) and asks
 "Still awake?" at random times, every 2 to 6 minutes. Each check is gentle: a short buzz and a soft
 beep, then again at 30 seconds, with an honesty reminder on screen. Tap **I'm awake** within 60 seconds.

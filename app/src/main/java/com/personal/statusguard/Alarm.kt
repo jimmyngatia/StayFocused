@@ -17,7 +17,7 @@ import java.util.Locale
  * and [codeName] says where it is ("Bible on my desk").
  * Levels: 1 = scan. 2 = scan, walk outside. 3 = scan, walk outside, push-ups.
  * 4 = scan, walk outside, push-ups, jog. Levels 3 and 4 end by typing today's pledge.
- * Levels 2 to 4 then keep checking you're awake for [watchMinutes].
+ * Levels 2 to 4 then keep checking you're awake for [watchMinutes], unless the awake watch is switched off ([watchOn]).
  * The walk can end at an outside checkpoint ([checkpointType]: a code, or the words on a sign).
  * [skipDate] is one day (yyyy-mm-dd) it won't ring.
  */
@@ -41,7 +41,10 @@ data class Alarm(
     val cameraPushups: Boolean = false,
     val jogSteps: Int = 100,
     val watchMinutes: Int = 30,
+    val watchOn: Boolean = true,
 ) {
+    /** Levels 2-4 with the awake watch switched on. */
+    val watches get() = level >= 2 && watchOn
     val walks get() = level >= 2
     val pushupsOn get() = level >= 3
     val jogs get() = level >= 4
@@ -106,6 +109,7 @@ class AlarmStore(context: Context) {
                 cameraPushups = o.optBoolean("cameraPushups", false),
                 jogSteps = o.optInt("jogSteps", 100),
                 watchMinutes = o.optInt("watchMinutes", 30),
+                watchOn = o.optBoolean("watchOn", true),
             )
         }
     }
@@ -142,6 +146,7 @@ class AlarmStore(context: Context) {
                     .put("cameraPushups", a.cameraPushups)
                     .put("jogSteps", a.jogSteps)
                     .put("watchMinutes", a.watchMinutes)
+                    .put("watchOn", a.watchOn)
             )
         }
         sp.edit().putString("list", array.toString()).apply()

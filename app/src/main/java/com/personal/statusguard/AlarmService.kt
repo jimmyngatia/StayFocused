@@ -300,8 +300,8 @@ class AlarmService : Service(), SensorEventListener {
                 enter(next)
             }
             practicing -> complete()
-            alarm!!.level >= 2 -> {
-                // Tasks done: the awake watch. Random checks until the time is up.
+            alarm!!.watches -> {
+                // Tasks done: the awake watch (if it's on for this alarm). Random checks until the time is up.
                 watchEnd = System.currentTimeMillis() + alarm!!.watchMinutes.coerceAtLeast(Alarm.MIN_WATCH) * 60_000L
                 checksDone = 0
                 waitForNextCheck()

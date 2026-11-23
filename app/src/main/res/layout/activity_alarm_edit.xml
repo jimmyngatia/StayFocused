@@ -154,12 +154,25 @@
 
             <TextView style="@style/Heading" android:drawableStart="@drawable/ic_check" android:text="Awake watch" />
 
-            <TextView style="@style/FieldLabel" android:text="Keep checking I'm awake for (minutes, at least 15)" />
-            <EditText android:id="@+id/watchMinutes" style="@style/Field" android:inputType="number" />
+            <Switch
+                android:id="@+id/watchOn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Check I'm awake after the tasks" />
+
+            <LinearLayout
+                android:id="@+id/watchFields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView style="@style/FieldLabel" android:text="Keep checking I'm awake for (minutes, at least 15)" />
+                <EditText android:id="@+id/watchMinutes" style="@style/Field" android:inputType="number" />
+            </LinearLayout>
 
             <TextView
                 style="@style/Caption"
-                android:text="After the tasks the alarm goes silent and asks &quot;Still awake?&quot; at random times, every 2 to 6 minutes, with a soft buzz. No answer within 60 seconds: it rings again, everything starts over and your morning streak goes back to 0." />
+                android:text="After the tasks the alarm goes silent and asks &quot;Still awake?&quot; at random times, every 2 to 6 minutes, with a soft buzz. No answer within 60 seconds: it rings again, everything starts over and your morning streak goes back to 0.\nSwitched off, the alarm is done as soon as the tasks are." />
         </LinearLayout>
 
         <Button android:id="@+id/saveButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_xl" android:text="Save" />

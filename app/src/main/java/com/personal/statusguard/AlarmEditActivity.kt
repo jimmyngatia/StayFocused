@@ -59,6 +59,10 @@ class AlarmEditActivity : Activity() {
         field(R.id.pushups).setText(a.pushups.toString())
         field(R.id.jogSteps).setText(a.jogSteps.toString())
         field(R.id.watchMinutes).setText(a.watchMinutes.toString())
+        findViewById<Switch>(R.id.watchOn).apply {
+            isChecked = a.watchOn
+            setOnCheckedChangeListener { _, _ -> levelChanged() }
+        }
         field(R.id.codeName).setText(a.codeName)
         field(R.id.checkpointName).setText(a.checkpointName)
         findViewById<Switch>(R.id.cameraPushups).apply {
@@ -180,10 +184,13 @@ class AlarmEditActivity : Activity() {
         show(R.id.pushupsBox, level >= 3)
         show(R.id.jogBox, level >= 4)
         show(R.id.watchBox, level >= 2)
-        findViewById<TextView>(R.id.levelNote).text = when (level) {
-            1 -> "Scan the code and it stops."
-            2 -> "Then the awake watch."
-            else -> "Then type today's pledge (\"I have not cheated…\"), then the awake watch. Going back to sleep emails your partner."
+        val watchOn = findViewById<Switch>(R.id.watchOn).isChecked
+        show(R.id.watchFields, watchOn)
+        findViewById<TextView>(R.id.levelNote).text = when {
+            level == 1 -> "Scan the code and it stops."
+            level == 2 -> if (watchOn) "Then the awake watch." else "Done after the walk (awake watch off)."
+            watchOn -> "Then type today's pledge (\"I have not cheated…\"), then the awake watch. Going back to sleep emails your partner."
+            else -> "Then type today's pledge (\"I have not cheated…\"). Done after that (awake watch off)."
         }
         // Counting steps needs the "Physical activity" permission.
         if (level >= 2 && checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
@@ -233,6 +240,7 @@ class AlarmEditActivity : Activity() {
         val pushups = number(R.id.pushups)
         val jog = number(R.id.jogSteps)
         val watch = number(R.id.watchMinutes)
+        val watchOn = findViewById<Switch>(R.id.watchOn).isChecked
         val type = if (level >= 2) checkType() else Alarm.CHECK_NONE
         val problem = when {
             code.isEmpty() -> "Scan a code first."
@@ -241,7 +249,7 @@ class AlarmEditActivity : Activity() {
             walkMinutes == null || walkMinutes !in 1..30 -> "Minutes allowed must be between 1 and 30."
             pushups == null || pushups !in 1..200 -> "Push-ups must be between 1 and 200."
             jog == null || jog !in 20..3000 -> "Jogging steps must be between 20 and 3000."
-            watch == null || watch !in Alarm.MIN_WATCH..120 -> "The awake watch must be between ${Alarm.MIN_WATCH} and 120 minutes."
+            watchOn && (watch == null || watch !in Alarm.MIN_WATCH..120) -> "The awake watch must be between ${Alarm.MIN_WATCH} and 120 minutes."
             type != Alarm.CHECK_NONE && checkpoint.isEmpty() -> "Set up the outside checkpoint, or choose \"None\"."
             else -> null
         }
@@ -269,7 +277,8 @@ class AlarmEditActivity : Activity() {
             checkpointName = field(R.id.checkpointName).text.toString().trim(),
             cameraPushups = findViewById<Switch>(R.id.cameraPushups).isChecked,
             jogSteps = jog!!,
-            watchMinutes = watch!!,
+            watchMinutes = watch?.takeIf { it in Alarm.MIN_WATCH..120 } ?: 30,
+            watchOn = watchOn,
         )
         store.save(alarm)
         AlarmScheduler.schedule(this, alarm)

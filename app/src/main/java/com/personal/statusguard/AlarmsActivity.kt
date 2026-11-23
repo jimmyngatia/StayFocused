@@ -102,7 +102,7 @@ class AlarmsActivity : Activity() {
         val card = layoutInflater.inflate(R.layout.item_alarm, findViewById(R.id.alarmList), false)
         val next = alarm.nextRing()
         card.findViewById<TextView>(R.id.timeText).text = alarm.timeText()
-        card.findViewById<TextView>(R.id.levelText).text = "LEVEL ${alarm.level}"
+        card.findViewById<TextView>(R.id.levelText).text = "LEVEL ${alarm.level}" + if (alarm.level >= 2 && !alarm.watchOn) "  ·  NO AWAKE WATCH" else ""
         card.findViewById<TextView>(R.id.labelText).text = alarm.label
         card.findViewById<TextView>(R.id.detailText).text =
             alarm.daysText() + (if (alarm.codeName.isEmpty()) "" else "  ·  code: ${alarm.codeName}") + "\n" + when {
