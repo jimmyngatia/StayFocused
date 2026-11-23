@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="Alarm" />
+
+        <!-- Accountability partner: strict alarms work best when someone knows. -->
+        <LinearLayout style="@style/Card.First">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_heart" android:text="Accountability partner" />
+
+            <TextView android:id="@+id/partnerText" style="@style/Body" />
+
+            <Button android:id="@+id/partnerButton" style="@style/SecondaryButton" android:drawableStart="@drawable/ic_mail" android:text="Add a partner" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_alarm" android:text="Name &amp; time" />
+
+            <EditText android:id="@+id/label" style="@style/Field" android:inputType="textCapSentences" />
+
+            <TimePicker
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:timePickerMode="spinner" />
+
+            <CheckBox android:id="@+id/enabled" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Alarm is on" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:text="Days" />
+
+            <LinearLayout
+                android:id="@+id/days"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_camera" android:text="Code to switch it off" />
+
+            <TextView android:id="@+id/codeText" style="@style/Body" />
+
+            <EditText
+                android:id="@+id/codeName"
+                style="@style/Field"
+                android:hint="Where is it? e.g. Bible on my desk"
+                android:inputType="textCapSentences" />
+
+            <Button android:id="@+id/scanButton" style="@style/PrimaryButton" android:drawableStart="@drawable/ic_camera" android:text="Scan code" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_fitness" android:text="Level" />
+
+            <RadioGroup
+                android:id="@+id/levelGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs">
+
+                <RadioButton android:id="@+id/level1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1 · Wake: scan the code" />
+                <RadioButton android:id="@+id/level2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2 · Move: scan, walk outside" />
+                <RadioButton android:id="@+id/level3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3 · Rise: scan, walk outside, push-ups" />
+                <RadioButton android:id="@+id/level4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4 · Beast: scan, walk outside, push-ups, jog" />
+            </RadioGroup>
+
+            <TextView android:id="@+id/levelNote" style="@style/Caption" android:layout_marginTop="@dimen/space_s" />
+        </LinearLayout>
+
+        <!-- Levels 2-4 -->
+        <LinearLayout android:id="@+id/walkBox" style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_walk" android:text="Walk outside" />
+
+            <TextView style="@style/FieldLabel" android:text="Steps to walk" />
+            <EditText android:id="@+id/steps" style="@style/Field" android:inputType="number" />
+
+            <TextView style="@style/FieldLabel" android:text="Minutes allowed (then it rings harder)" />
+            <EditText android:id="@+id/walkMinutes" style="@style/Field" android:inputType="number" />
+
+            <TextView style="@style/FieldLabel" android:text="Outside checkpoint" />
+            <RadioGroup android:id="@+id/checkpointGroup" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <RadioButton android:id="@+id/checkNone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="None, just count my steps" />
+                <RadioButton android:id="@+id/checkCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Scan a barcode or QR code outside" />
+                <RadioButton android:id="@+id/checkWords" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Read the words on a sign outside" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/checkpointBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView android:id="@+id/checkpointText" style="@style/Body" android:layout_marginTop="@dimen/space_s" />
+
+                <EditText
+                    android:id="@+id/checkpointName"
+                    style="@style/Field"
+                    android:hint="Where is it? e.g. Sign at the tap outside"
+                    android:inputType="textCapSentences" />
+
+                <Button android:id="@+id/checkpointButton" style="@style/PrimaryButton" android:drawableStart="@drawable/ic_place" />
+
+                <TextView
+                    style="@style/Caption"
+                    android:layout_marginTop="@dimen/space_s"
+                    android:text="Set it up standing at the spot. The flashlight comes on for signs, so it works in the dark. A printed QR code taped up is the most reliable." />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Levels 3-4 -->
+        <LinearLayout android:id="@+id/pushupsBox" style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_fitness" android:text="Push-ups" />
+
+            <TextView style="@style/FieldLabel" android:text="Push-ups to do" />
+            <EditText android:id="@+id/pushups" style="@style/Field" android:inputType="number" />
+
+            <Switch
+                android:id="@+id/cameraPushups"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_m"
+                android:text="Camera push-ups (try it)" />
+
+            <TextView
+                style="@style/Caption"
+                android:text="The front camera watches your face come down and go up, so a hand wave doesn't count. Nothing is saved. If it's too dark to see your face, it switches to the sensor with 50% more push-ups.\nEither way the phone must lie flat and still on the floor." />
+        </LinearLayout>
+
+        <!-- Level 4 -->
+        <LinearLayout android:id="@+id/jogBox" style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_walk" android:text="Jog" />
+
+            <TextView style="@style/FieldLabel" android:text="Jogging steps (walking pace doesn't count)" />
+            <EditText android:id="@+id/jogSteps" style="@style/Field" android:inputType="number" />
+        </LinearLayout>
+
+        <!-- Levels 2-4 -->
+        <LinearLayout android:id="@+id/watchBox" style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_check" android:text="Awake watch" />
+
+            <TextView style="@style/FieldLabel" android:text="Keep checking I'm awake for (minutes, at least 15)" />
+            <EditText android:id="@+id/watchMinutes" style="@style/Field" android:inputType="number" />
+
+            <TextView
+                style="@style/Caption"
+                android:text="After the tasks the alarm goes silent and asks &quot;Still awake?&quot; at random times, every 2 to 6 minutes, with a soft buzz. No answer within 60 seconds: it rings again, everything starts over and your streaks are cut in half." />
+        </LinearLayout>
+
+        <Button android:id="@+id/saveButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_xl" android:text="Save" />
+
+        <Button android:id="@+id/testButton" style="@style/SecondaryButton" android:layout_gravity="center_horizontal" android:text="Save and test now" />
+
+        <Button android:id="@+id/deleteButton" style="@style/DangerButton" android:layout_gravity="center_horizontal" android:text="Delete alarm" />
+    </LinearLayout>
+</ScrollView>

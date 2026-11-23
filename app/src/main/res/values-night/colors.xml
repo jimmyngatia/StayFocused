@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accent">#3DBE7D</color>
+    <color name="accent_soft">#173326</color>
+    <color name="background">#0D1311</color>
+    <color name="surface">#17201C</color>
+    <color name="outline">#24302B</color>
+    <color name="text_primary">#EEF3F1</color>
+    <color name="text_secondary">#93A39C</color>
+    <color name="danger">#F87171</color>
+    <color name="warning">#F59E0B</color>
+    <bool name="light_bars">false</bool>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Status Guard</string>
+    <string name="service_description">Blocks WhatsApp Status outside the times and daily limit you set, blocks the apps you choose during sleep time, and limits TikTok, Instagram and YouTube Shorts. It only reads WhatsApp\'s screens and checks whether YouTube is showing Shorts; for other apps it only sees which app is open.</string>
+</resources>

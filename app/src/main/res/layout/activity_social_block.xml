@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Covers TikTok, Instagram or YouTube Shorts when they aren't allowed. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/social_background"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/CoverPage" android:layout_height="match_parent">
+
+        <ImageView android:id="@+id/appIcon" style="@style/CoverIcon" />
+
+        <TextView android:id="@+id/titleText" style="@style/CoverTitle" />
+
+        <TextView android:id="@+id/reasonText" style="@style/CoverCaption" />
+
+        <TextView android:id="@+id/quoteText" style="@style/CoverQuote" />
+
+        <TextView android:id="@+id/statsText" style="@style/CoverBody" android:layout_marginTop="@dimen/space_xl" android:textStyle="bold" />
+
+        <TextView android:id="@+id/streakText" style="@style/CoverCaption" />
+
+        <Button android:id="@+id/okButton" style="@style/CoverButton" android:text="Back to my life" />
+
+        <Button android:id="@+id/forceButton" style="@style/CoverLink" android:text="Force open…" />
+
+        <LinearLayout
+            android:id="@+id/forceBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_s"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView style="@style/CoverBody" android:text="A force open costs you" android:textStyle="bold" />
+
+            <TextView android:id="@+id/costText" style="@style/CoverCaption" />
+
+            <Button android:id="@+id/forceConfirmButton" style="@style/GhostButton" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

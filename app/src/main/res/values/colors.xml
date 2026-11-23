@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status Guard colours (light mode). Dark mode versions are in values-night. -->
+<resources>
+    <color name="accent">#1B8F4C</color>
+    <color name="accent_soft">#E3F4EA</color>
+    <color name="background">#F4F6F5</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="outline">#E2E8E5</color>
+    <color name="text_primary">#10201A</color>
+    <color name="text_secondary">#5E6B66</color>
+    <color name="danger">#DC2626</color>
+    <color name="warning">#D97706</color>
+    <color name="on_cover">#FFFFFF</color>
+    <color name="on_cover_soft">#CCFFFFFF</color>
+    <!-- Night screen (the same in light and dark mode) -->
+    <color name="night_text">#E4E7FF</color>
+    <color name="night_soft">#8C93C4</color>
+    <color name="night_moon">#C9CFFF</color>
+    <bool name="light_bars">true</bool>
+</resources>

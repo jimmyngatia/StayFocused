@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A running alarm: scan, walk outside, checkpoint, push-ups, jog, pledge, awake watch, done. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/alarm_background"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/CoverPage" android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/partText"
+            style="@style/CoverCaption"
+            android:letterSpacing="0.15"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView android:id="@+id/titleText" style="@style/CoverTitle" />
+
+        <TextView android:id="@+id/bigText" style="@style/CoverBig" />
+
+        <!-- Camera push-ups: your face in the front camera. The white page around it lights your face. -->
+        <androidx.camera.view.PreviewView
+            android:id="@+id/cameraPreview"
+            android:layout_width="160dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/space_m"
+            android:visibility="gone" />
+
+        <TextView android:id="@+id/hintText" style="@style/CoverBody" android:textStyle="bold" android:visibility="gone" />
+
+        <TextView android:id="@+id/infoText" style="@style/CoverBody" />
+
+        <EditText
+            android:id="@+id/pledgeInput"
+            style="@style/Field"
+            android:layout_marginTop="@dimen/space_m"
+            android:background="@drawable/card_background"
+            android:hint="Type the sentence above"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:minLines="2"
+            android:padding="@dimen/space_m"
+            android:visibility="gone" />
+
+        <Button android:id="@+id/actionButton" style="@style/CoverButton" />
+
+        <Button android:id="@+id/emergencyButton" style="@style/CoverLink" android:text="Stop test" android:visibility="gone" />
+    </LinearLayout>
+</ScrollView>

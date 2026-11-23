@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: streak, report, status, social media, strict alarms, sleep time, my words, password. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_launcher" />
+
+            <TextView style="@style/Title" android:layout_marginStart="@dimen/space_m" android:text="@string/app_name" />
+        </LinearLayout>
+
+        <TextView android:id="@+id/whyText" style="@style/Subtitle" android:layout_marginTop="@dimen/space_m" android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/intentionText"
+            style="@style/Body"
+            android:drawableStart="@drawable/ic_flag"
+            android:drawableTint="@color/accent"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/runningButton"
+            style="@style/PrimaryButton"
+            android:backgroundTint="@color/warning"
+            android:drawableStart="@drawable/ic_alarm"
+            android:text="Alarm in progress · tap to open"
+            android:visibility="gone" />
+
+        <!-- Streak -->
+        <LinearLayout style="@style/Card.First">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_flame" android:text="My streak" />
+            <FrameLayout
+                android:id="@+id/streakBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Report -->
+        <LinearLayout style="@style/Card">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_chart" android:text="Today" />
+            <TextView android:id="@+id/todayText" style="@style/Body" />
+            <Button android:id="@+id/reportButton" style="@style/LinkButton" android:text="Weekly report" />
+        </LinearLayout>
+
+        <!-- Status -->
+        <LinearLayout style="@style/Card">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_chat" android:text="WhatsApp status" />
+            <TextView android:id="@+id/protectionText" style="@style/Body" />
+            <Button android:id="@+id/enableButton" style="@style/PrimaryButton" android:text="Turn on in Accessibility settings" />
+            <TextView android:id="@+id/usageText" style="@style/Body" android:layout_marginTop="@dimen/space_m" />
+            <ProgressBar
+                android:id="@+id/usageBar"
+                style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_s"
+                android:progressBackgroundTint="@color/outline"
+                android:progressTint="@color/accent" />
+            <TextView android:id="@+id/nowText" style="@style/Caption" android:layout_marginTop="@dimen/space_s" />
+            <Button android:id="@+id/settingsButton" style="@style/LockedLinkButton" android:text="Status settings" />
+        </LinearLayout>
+
+        <!-- Social media -->
+        <LinearLayout style="@style/Card">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_play" android:text="Social media" />
+            <TextView android:id="@+id/socialUsageText" style="@style/Body" />
+            <ProgressBar
+                android:id="@+id/socialBar"
+                style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_s"
+                android:progressBackgroundTint="@color/outline"
+                android:progressTint="@color/accent" />
+            <TextView android:id="@+id/socialNowText" style="@style/Caption" android:layout_marginTop="@dimen/space_s" />
+            <TextView android:id="@+id/socialAppsText" style="@style/Caption" android:layout_marginTop="@dimen/space_s" />
+            <Button android:id="@+id/socialButton" style="@style/LockedLinkButton" android:text="Social media settings" />
+        </LinearLayout>
+
+        <!-- Strict alarms -->
+        <LinearLayout style="@style/Card">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_alarm" android:text="Strict alarms" />
+            <TextView android:id="@+id/alarmText" style="@style/Body" />
+            <Button android:id="@+id/alarmsButton" style="@style/LinkButton" android:text="Alarms" />
+        </LinearLayout>
+
+        <!-- Sleep time -->
+        <LinearLayout style="@style/Card">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_moon" android:text="Sleep time" />
+            <TextView android:id="@+id/sleepText" style="@style/Body" />
+            <Button android:id="@+id/sleepButton" style="@style/LockedLinkButton" android:text="Sleep settings" />
+        </LinearLayout>
+
+        <!-- My words -->
+        <LinearLayout style="@style/Card">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_edit" android:text="My words" />
+            <TextView android:id="@+id/wordsText" style="@style/Body" />
+            <Button android:id="@+id/wordsButton" style="@style/LinkButton" android:text="Whys, quotes &amp; intention" />
+        </LinearLayout>
+
+        <!-- Password -->
+        <LinearLayout style="@style/Card">
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_key" android:text="Account" />
+            <TextView android:id="@+id/passwordText" style="@style/Body" />
+            <Button android:id="@+id/passwordButton" style="@style/LockedLinkButton" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/Caption"
+            android:layout_marginTop="@dimen/space_xl"
+            android:text="Can't turn protection on? Android Settings → Apps → Status Guard → ⋮ (top right) → Allow restricted settings, then try again." />
+    </LinearLayout>
+</ScrollView>

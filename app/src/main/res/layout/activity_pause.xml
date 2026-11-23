@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Breathing pause before status opens. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/pause_background"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/CoverPage" android:layout_height="match_parent">
+
+        <ImageView style="@style/CoverIcon" android:src="@drawable/ic_air" />
+
+        <TextView style="@style/CoverTitle" android:text="Breathe…" />
+
+        <TextView style="@style/CoverCaption" android:text="Do you really want to watch status right now?" />
+
+        <TextView android:id="@+id/countText" style="@style/CoverBig" />
+
+        <TextView android:id="@+id/quoteText" style="@style/CoverQuote" android:layout_marginTop="@dimen/space_s" />
+
+        <TextView android:id="@+id/usageText" style="@style/CoverCaption" android:layout_marginTop="@dimen/space_xl" />
+
+        <Button android:id="@+id/neverMindButton" style="@style/CoverButton" android:text="Never mind, take me to Chats" />
+
+        <Button android:id="@+id/continueButton" style="@style/GhostButton" />
+    </LinearLayout>
+</ScrollView>

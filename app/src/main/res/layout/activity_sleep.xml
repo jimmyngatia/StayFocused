@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="Sleep time" />
+
+        <TextView
+            style="@style/Subtitle"
+            android:text="From bedtime to wake-up the phone shows a dark night screen. Only Phone, Clock, WhatsApp calls and the apps you choose still work. Your sleep is counted while the screen stays off." />
+
+        <LinearLayout style="@style/Card.First">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_moon" android:text="Schedules" />
+
+            <LinearLayout
+                android:id="@+id/scheduleList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button android:id="@+id/addScheduleButton" style="@style/SecondaryButton" android:drawableStart="@drawable/ic_add" android:text="Add schedule" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_check" android:text="Apps you can still use" />
+
+            <TextView android:id="@+id/appsText" style="@style/Body" />
+
+            <Button android:id="@+id/chooseAppsButton" style="@style/PrimaryButton" android:text="Choose apps" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

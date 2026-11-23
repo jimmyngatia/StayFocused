@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="Social media" />
+
+        <TextView
+            style="@style/Subtitle"
+            android:text="TikTok, YouTube Shorts and Instagram share one daily pot of entertainment time, and only open at the times you allow." />
+
+        <LinearLayout style="@style/Card.First">
+
+            <CheckBox
+                android:id="@+id/enabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Block social media"
+                android:textSize="@dimen/text_heading"
+                android:textStyle="bold" />
+
+            <TextView style="@style/Heading" android:layout_marginTop="@dimen/space_l" android:drawableStart="@drawable/ic_phone" android:text="Apps" />
+
+            <CheckBox android:id="@+id/appTiktok" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TikTok (whole app)" />
+            <CheckBox android:id="@+id/appShorts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="YouTube Shorts (normal YouTube stays free)" />
+            <CheckBox android:id="@+id/appInstagram" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Instagram (whole app)" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_play" android:text="Entertainment time" />
+
+            <TextView style="@style/FieldLabel" android:text="Daily limit for all of them together (minutes)" />
+            <EditText android:id="@+id/limit" style="@style/Field" android:inputType="number" />
+
+            <TextView style="@style/FieldLabel" android:text="Allowed times (24-hour, separate with commas)" />
+            <EditText android:id="@+id/windows" style="@style/Field" android:hint="12:30-13:00, 19:00-21:00" android:inputType="text" />
+
+            <TextView
+                style="@style/Caption"
+                android:layout_marginTop="@dimen/space_m"
+                android:text="Outside these times, or once the minutes are used up, the apps won't open. The only way in is a force open: 5 minutes, and every streak is cut in half." />
+        </LinearLayout>
+
+        <Button android:id="@+id/saveButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_xl" android:text="Save" />
+    </LinearLayout>
+</ScrollView>

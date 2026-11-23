@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="My words" />
+
+        <TextView style="@style/Subtitle" android:text="Your own words show up on the lockout, pause, sleep and alarm screens." />
+
+        <LinearLayout style="@style/Card.First">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_flag" android:text="Intention" />
+
+            <TextView android:id="@+id/intentionText" style="@style/Body" />
+
+            <Button android:id="@+id/intentionButton" style="@style/SecondaryButton" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_heart" android:text="My whys" />
+
+            <TextView style="@style/Caption" android:text="Why do you want your time back?" />
+
+            <LinearLayout
+                android:id="@+id/whyList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <EditText
+                android:id="@+id/whyInput"
+                style="@style/Field"
+                android:hint="e.g. More time with God in the morning"
+                android:inputType="textCapSentences|textMultiLine" />
+
+            <Button android:id="@+id/addWhyButton" style="@style/PrimaryButton" android:drawableStart="@drawable/ic_add" android:text="Add why" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_quote" android:text="My quotes" />
+
+            <LinearLayout
+                android:id="@+id/quoteList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <EditText
+                android:id="@+id/quoteInput"
+                style="@style/Field"
+                android:hint="A quote, verse or reminder"
+                android:inputType="textCapSentences|textMultiLine" />
+
+            <Button android:id="@+id/addQuoteButton" style="@style/PrimaryButton" android:drawableStart="@drawable/ic_add" android:text="Add quote" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

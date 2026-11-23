@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Scans a barcode/QR code or reads a sign with the back camera. Flashlight on by default. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:fitsSystemWindows="true">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        style="@style/Card"
+        android:layout_gravity="bottom"
+        android:layout_margin="@dimen/space_m">
+
+        <TextView android:id="@+id/titleText" style="@style/Heading" android:drawableStart="@drawable/ic_camera" />
+
+        <TextView android:id="@+id/statusText" style="@style/Body" android:layout_marginTop="@dimen/space_xs" />
+
+        <Button android:id="@+id/torchButton" style="@style/SecondaryButton" android:layout_gravity="center_horizontal" android:text="Flashlight off" />
+
+        <Button android:id="@+id/useButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_m" android:text="Use these words" />
+
+        <Button android:id="@+id/cancelButton" style="@style/SecondaryButton" android:layout_gravity="center_horizontal" android:text="Cancel" />
+    </LinearLayout>
+</FrameLayout>

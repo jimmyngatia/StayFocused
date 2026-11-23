@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Heading" android:text="Bedtime" />
+
+        <TimePicker
+            android:id="@+id/bed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:timePickerMode="spinner" />
+
+        <TextView style="@style/Heading" android:layout_marginTop="@dimen/space_l" android:text="Wake up" />
+
+        <TimePicker
+            android:id="@+id/wake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:timePickerMode="spinner" />
+
+        <TextView style="@style/Heading" android:layout_marginTop="@dimen/space_l" android:text="Nights (the day bedtime starts)" />
+
+        <LinearLayout
+            android:id="@+id/days"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <CheckBox
+            android:id="@+id/enabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_s"
+            android:text="Schedule is on" />
+    </LinearLayout>
+</ScrollView>

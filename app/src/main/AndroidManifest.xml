@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Weekly report: emailed through Gmail -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Weekly report: phone screen time (granted by you under "Usage access") -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- Sleep time: list the apps you can still use, and find the clock and home screen apps -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SHOW_ALARMS" />
+        </intent>
+    </queries>
+
+    <!-- Strict alarms -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <!-- Camera push-ups (face tracking) and reading the checkpoint sign -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:label="Settings" />
+
+        <!-- Shown when WhatsApp is kicked out. Lives in its own task so closing it lands on the home screen. -->
+        <activity
+            android:name=".BlockActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.personal.statusguard.block"
+            android:theme="@style/CoverTheme" />
+
+        <!-- Breathing pause before status, and the sleep-time cover. Same idea as the lockout screen. -->
+        <activity
+            android:name=".PauseActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.personal.statusguard.pause"
+            android:theme="@style/CoverTheme" />
+
+        <!-- Sleep time: the night screen. Shows over the lock screen. -->
+        <activity
+            android:name=".NightActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:taskAffinity="com.personal.statusguard.night"
+            android:theme="@style/CoverTheme" />
+
+        <!-- Covers TikTok, Instagram or YouTube Shorts when they aren't allowed. -->
+        <activity
+            android:name=".SocialBlockActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.personal.statusguard.social"
+            android:theme="@style/CoverTheme" />
+
+        <activity
+            android:name=".PasswordActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:label="Password" />
+
+        <activity
+            android:name=".SocialSettingsActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:label="Social media" />
+
+        <activity
+            android:name=".SleepActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:label="Sleep time" />
+
+        <activity
+            android:name=".MyWordsActivity"
+            android:exported="false"
+            android:label="My words" />
+
+        <activity
+            android:name=".IntentionActivity"
+            android:exported="false"
+            android:label="Intention" />
+
+        <activity
+            android:name=".ReportActivity"
+            android:exported="false"
+            android:label="Weekly report" />
+
+        <activity
+            android:name=".EmailSettingsActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:label="Auto-email report" />
+
+        <receiver
+            android:name=".Routine$RoutineReceiver"
+            android:exported="false" />
+
+        <activity
+            android:name=".AlarmsActivity"
+            android:exported="false"
+            android:label="Strict alarms" />
+
+        <activity
+            android:name=".AlarmEditActivity"
+            android:exported="false"
+            android:label="Alarm" />
+
+        <!-- Our camera scanner: codes and signs, flashlight on. -->
+        <activity
+            android:name=".ScanActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:showWhenLocked="true"
+            android:label="Scan" />
+
+        <!-- Google Play services downloads the code, face and text readers right after install, so they work offline. -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode,face,ocr" />
+
+        <activity
+            android:name=".AlarmRingActivity"
+            android:autoRemoveFromRecents="true"
+            android:exported="false"
+            android:label="⏰ Alarm"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.personal.statusguard.alarm"
+            android:theme="@style/CoverTheme" />
+
+        <service
+            android:name=".AlarmService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".StatusGuardService"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_config" />
+        </service>
+    </application>
+</manifest>

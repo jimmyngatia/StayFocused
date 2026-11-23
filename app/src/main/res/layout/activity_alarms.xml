@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="Strict alarms" />
+
+        <TextView
+            style="@style/Subtitle"
+            android:text="Rings at full volume until you scan the right barcode. Tap an alarm to edit it (password)." />
+
+        <LinearLayout
+            android:id="@+id/fullScreenWarning"
+            style="@style/Card">
+
+            <TextView
+                style="@style/Body"
+                android:layout_marginTop="0dp"
+                android:drawableStart="@drawable/ic_warning"
+                android:drawableTint="@color/warning"
+                android:text="Allow full-screen alerts so the alarm screen can appear over everything." />
+
+            <Button android:id="@+id/fullScreenButton" style="@style/PrimaryButton" android:text="Allow full-screen alerts" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/alarmList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:orientation="vertical" />
+
+        <Button android:id="@+id/addButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_xl" android:drawableStart="@drawable/ic_add" android:text="Add alarm" />
+
+        <!-- Practice: try each step on its own, nothing counts. -->
+        <LinearLayout style="@style/Card" android:layout_marginTop="@dimen/space_xl">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_fitness" android:text="Practice a step" />
+
+            <TextView
+                style="@style/Caption"
+                android:text="Try one step on its own, with your alarms' settings. Nothing counts: no streaks, no report, no emails. Use &quot;Stop test&quot; to end early." />
+
+            <LinearLayout
+                android:id="@+id/practiceBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_s"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

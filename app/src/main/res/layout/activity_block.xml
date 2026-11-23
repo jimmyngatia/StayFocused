@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lockout: covers WhatsApp when status isn't allowed. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/calm_background"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/CoverPage" android:layout_height="match_parent">
+
+        <ImageView style="@style/CoverIcon" android:src="@drawable/ic_leaf" />
+
+        <TextView android:id="@+id/headingText" style="@style/CoverTitle" />
+
+        <TextView android:id="@+id/quoteText" style="@style/CoverQuote" />
+
+        <TextView android:id="@+id/sourceText" style="@style/CoverCaption" android:layout_marginTop="@dimen/space_s" />
+
+        <TextView android:id="@+id/countdownText" style="@style/CoverBody" android:layout_marginTop="@dimen/space_xxl" android:textStyle="bold" />
+
+        <TextView android:id="@+id/reasonText" style="@style/CoverCaption" />
+
+        <Button android:id="@+id/okButton" style="@style/CoverButton" android:text="Back to my day" />
+    </LinearLayout>
+</ScrollView>
