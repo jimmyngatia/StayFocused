@@ -326,8 +326,8 @@ class AlarmService : Service(), SensorEventListener {
             val history = History(this)
             history.add(History.AWAKE_MISSED)
             log { plus("missed", 1) }
-            // Streaks are cut in half once per morning, not again for every miss.
-            if (!wentBackToSleep) history.halveAllStreaks()
+            // Going back to sleep costs the morning streak (and breaks the general streak for today).
+            history.alarmStreak = 0
             if (a.level >= 3) {
                 EmailReport.queuePartnerEmail(
                     this, EmailReport.WENT_BACK_TO_SLEEP,

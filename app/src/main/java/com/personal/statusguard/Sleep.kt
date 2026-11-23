@@ -135,19 +135,21 @@ class SleepStore(private val context: Context) {
     private fun keyboard() = Settings.Secure.getString(context.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
         ?.let { ComponentName.unflattenFromString(it)?.packageName }
 
+    /** True while media is muted by sleep time (saved, so it's unmuted even after a restart). */
+    var mutedMedia: Boolean
+        get() = sp.getBoolean("muted_media", false)
+        set(v) = sp.edit().putBoolean("muted_media", v).apply()
+
     // ---- Force bypass ----
 
     val bypassUntil get() = sp.getLong("bypass_until", 0)
 
     fun isBypassed() = System.currentTimeMillis() < bypassUntil
 
-    /** Opens the whole phone for 5 minutes. Counted in the report, and every streak is cut in half. */
+    /** Opens the whole phone for 5 minutes. Counted in the report; resets the sleep streak and breaks today's general streak. */
     fun startBypass() {
         sp.edit().putLong("bypass_until", System.currentTimeMillis() + BYPASS_MINUTES * 60_000L).apply()
-        History(context).apply {
-            add(History.SLEEP_EMERGENCY)
-            halveAllStreaks()
-        }
+        History(context).add(History.SLEEP_EMERGENCY)
     }
 
     /** Is sleep time being enforced right now? (Not during a bypass, and never while an alarm rings.) */

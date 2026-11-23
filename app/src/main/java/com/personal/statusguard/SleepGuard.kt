@@ -5,16 +5,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
 import android.os.Handler
 import android.os.SystemClock
+import android.util.Log
+import android.view.KeyEvent
 
 /**
  * The sleep-time part of the accessibility service.
  * - Covers every app except the allowed ones (Phone, Clock, your extras) with the night screen.
  * - WhatsApp and WhatsApp Business calls always get through.
  * - Shows the night screen as soon as the screen turns on, even over the lock screen.
+ * - Stops music and videos at bedtime (and any started later), so nothing plays all night.
  * - Counts sleep: time with the screen off during sleep time.
  */
 class SleepGuard(private val service: AccessibilityService, private val handler: Handler) {
@@ -55,11 +60,68 @@ class SleepGuard(private val service: AccessibilityService, private val handler:
         }
     }
 
-    /** Every few seconds: catches apps left open at bedtime, and ended bypasses. */
+    /** Every few seconds: catches apps left open at bedtime, ended bypasses, and music still playing. */
     private val tick = object : Runnable {
         override fun run() {
             service.rootInActiveWindow?.packageName?.toString()?.let { check(it, screen = null, fromTick = true) }
+            if (store.isEnforcing() && !callActive()) silence() else letPlay()
             handler.postDelayed(this, 3000)
+        }
+    }
+
+    // ---- Music: stopped at bedtime ----
+
+    private var focus: AudioFocusRequest? = null
+    private var pausesInARow = 0
+
+    /**
+     * Something is playing during sleep time: stop it, a step harder each time it keeps playing.
+     * 1. Press "pause" (like the button on earphones): works for Spotify, YouTube, Boomplay...
+     * 2. Take the audio focus: well-behaved apps stop playing.
+     * 3. Mute media until wake-up (the alarm uses its own volume, so it still rings).
+     */
+    private fun silence() {
+        if (!audio.isMusicActive) {
+            pausesInARow = 0
+            return
+        }
+        pausesInARow++
+        Log.d(StatusGuardService.TAG, "sleep: music playing, step $pausesInARow")
+        when (pausesInARow) {
+            1 -> pressPause()
+            2 -> {
+                pressPause()
+                takeFocus()
+            }
+            else -> if (!store.mutedMedia) {
+                audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0)
+                store.mutedMedia = true
+            }
+        }
+    }
+
+    private fun pressPause() {
+        audio.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE))
+        audio.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE))
+    }
+
+    private fun takeFocus() {
+        if (focus != null) return
+        focus = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+            .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).build())
+            .setOnAudioFocusChangeListener { }
+            .build()
+            .also { audio.requestAudioFocus(it) }
+    }
+
+    /** Sleep time is over (or a bypass, a call, an alarm): give the sound back. */
+    private fun letPlay() {
+        pausesInARow = 0
+        focus?.let { audio.abandonAudioFocusRequest(it) }
+        focus = null
+        if (store.mutedMedia) {
+            audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0)
+            store.mutedMedia = false
         }
     }
 

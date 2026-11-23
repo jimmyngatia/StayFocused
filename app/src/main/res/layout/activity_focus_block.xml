@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Covers WhatsApp during a focus time once the quick check is used up. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/calm_background"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/CoverPage" android:layout_height="match_parent">
+
+        <ImageView style="@style/CoverIcon" android:src="@drawable/ic_sun" />
+
+        <TextView android:id="@+id/titleText" style="@style/CoverTitle" />
+
+        <TextView android:id="@+id/reasonText" style="@style/CoverCaption" />
+
+        <TextView android:id="@+id/quoteText" style="@style/CoverQuote" />
+
+        <TextView android:id="@+id/statsText" style="@style/CoverBody" android:layout_marginTop="@dimen/space_xl" android:textStyle="bold" />
+
+        <TextView android:id="@+id/streakText" style="@style/CoverCaption" />
+
+        <Button android:id="@+id/okButton" style="@style/CoverButton" android:text="Close WhatsApp" />
+
+        <Button android:id="@+id/extraButton" style="@style/CoverLink" android:text="Open anyway…" />
+
+        <LinearLayout
+            android:id="@+id/extraBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_s"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView style="@style/CoverBody" android:text="Opening anyway costs you" android:textStyle="bold" />
+
+            <TextView android:id="@+id/costText" style="@style/CoverCaption" />
+
+            <Button android:id="@+id/extraConfirmButton" style="@style/GhostButton" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

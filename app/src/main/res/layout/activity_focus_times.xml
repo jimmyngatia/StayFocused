@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/Page">
+
+        <TextView style="@style/Title" android:text="WhatsApp focus times" />
+
+        <TextView
+            style="@style/Subtitle"
+            android:text="Times when WhatsApp is closed, like your morning devotion. Each one gives you a short quick check (counted only while WhatsApp is open), then WhatsApp closes until the time ends. Calls always come through." />
+
+        <LinearLayout style="@style/Card.First">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_sun" android:text="Focus times" />
+
+            <LinearLayout
+                android:id="@+id/blockList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button android:id="@+id/addBlockButton" style="@style/SecondaryButton" android:drawableStart="@drawable/ic_add" android:text="Add focus time" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card">
+
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_lock" android:text="Open anyway" />
+
+            <TextView style="@style/FieldLabel" android:text="Minutes WhatsApp opens for" />
+            <EditText android:id="@+id/extraMinutes" style="@style/Field" android:inputType="number" />
+
+            <TextView style="@style/FieldLabel" android:text="Wait before it opens (seconds, grows each time)" />
+            <EditText android:id="@+id/waitSeconds" style="@style/Field" android:inputType="number" />
+
+            <TextView
+                style="@style/Caption"
+                android:layout_marginTop="@dimen/space_m"
+                android:text="With a 10-second wait: 10 s the first time, 20 s the second, 30 s the third… Every open anyway resets your WhatsApp streak and breaks today's general streak." />
+
+            <Button android:id="@+id/saveButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_l" android:text="Save" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

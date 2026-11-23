@@ -63,18 +63,21 @@ class History(context: Context) {
 
     /**
      * Everything that counts as a slip: any one of these on a day breaks the general streak.
-     * Blocked tries on status, WhatsApp (during a lockout) and social media are NOT slips:
+     * Blocked tries (status, WhatsApp focus times, social media, sleep time) are NOT slips:
      * the app just blocks you and counts them for the report.
      */
-    private val slips get() = listOf(SLEEP_ATTEMPTS, SLEEP_EMERGENCY, ALARMS_STOPPED, ALARMS_ESCAPED) +
-        SocialApp.entries.map { it.forceField }
+    private val slipFields = listOf(SLEEP_EMERGENCY, ALARMS_STOPPED, ALARMS_ESCAPED, AWAKE_MISSED, WA_EXTRA)
 
-    /** Did anything go wrong on [date]? */
-    fun slipped(date: LocalDate) = slips.any { get(date, it) > 0 }
+    /** Did anything go wrong on [date]? Social force opens count for every app, even ones removed since. */
+    fun slipped(date: LocalDate): Boolean {
+        val d = day(date)
+        if (slipFields.any { d.optLong(it) > 0 }) return true
+        return d.keys().asSequence().any { it.startsWith("social_") && it.endsWith("_force") && d.optLong(it) > 0 }
+    }
 
     /**
-     * The general streak: days in a row where every rule was kept. Any slip
-     * (a force open, a sleep-time try or bypass, an alarm shortcut) breaks it.
+     * The general streak: days in a row where every streak held. Any slip
+     * (a force open, a sleep-time bypass, an extra WhatsApp open, an alarm shortcut) breaks it.
      */
     fun overallStreak(): Int {
         var days = 0
@@ -87,28 +90,21 @@ class History(context: Context) {
         return days
     }
 
-    /** Status streak: days since the app started; blocked tries don't break it, only halving cuts it. */
-    fun statusStreak(): Int =
-        (ChronoUnit.DAYS.between(streakStart(STATUS_ATTEMPTS), LocalDate.now()) + 1).toInt().coerceAtLeast(0)
+    /** WhatsApp streak: days in a row without an extra open during a focus time. */
+    fun whatsappStreak(): Int = cleanStreak(WA_EXTRA)
 
-    /** Days in a row with no social media force open (a force open halves it, like every streak). */
+    /** Sleep streak: nights in a row without forcing the phone open. Blocked tries don't break it. */
+    fun sleepStreak(): Int = cleanStreak(SLEEP_EMERGENCY)
+
+    /** Days in a row with no social media force open. A force open resets it. */
     fun socialStreak(): Int {
         if (!sp.contains("start_$SOCIAL")) sp.edit().putString("start_$SOCIAL", LocalDate.now().toString()).apply()
         return (ChronoUnit.DAYS.between(streakStart(SOCIAL), LocalDate.now()) + 1).toInt().coerceAtLeast(0)
     }
 
-    /** Makes a streak count only [keep] days, by moving its start (tomorrow if 0). */
-    private fun setStreak(field: String, keep: Int) =
-        sp.edit().putString("start_$field", LocalDate.now().minusDays(keep - 1L).toString()).apply()
-
-    /** The price of a force open or of going back to sleep: every streak is cut in half. */
-    fun halveAllStreaks() {
-        setStreak(STATUS_ATTEMPTS, statusStreak() / 2)
-        setStreak(SLEEP_ATTEMPTS, cleanStreak(SLEEP_ATTEMPTS) / 2)
-        setStreak(SOCIAL, socialStreak() / 2)
-        setStreak(OVERALL, overallStreak() / 2)
-        alarmStreak /= 2
-    }
+    /** A social force open: the social streak starts again tomorrow. Other streaks are left alone. */
+    fun resetSocialStreak() =
+        sp.edit().putString("start_$SOCIAL", LocalDate.now().plusDays(1).toString()).apply()
 
     /** Alarms finished in a row without the emergency password or a restart. */
     var alarmStreak: Int
@@ -189,6 +185,9 @@ class History(context: Context) {
         const val ALARMS_ESCAPED = "alarmsEscaped" // restart or force stop
         const val ALARMS_PAUSED = "alarmsPaused" // "switch off for tomorrow"
         const val AWAKE_MISSED = "awakeMissed" // missed an "are you still awake?" check: went back to sleep
+        const val WA_FOCUS_SECONDS = "waFocusS" // WhatsApp time used during focus times (the quick check)
+        const val WA_FOCUS_TRIES = "waFocusTries" // WhatsApp covered during a focus time
+        const val WA_EXTRA = "waExtra" // "Open anyway" during a focus time: a slip
         const val PHONE_MS = "phoneMs"
         const val UNLOCKS = "unlocks"
         const val SOCIAL = "social" // the social media streak

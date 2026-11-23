@@ -10,7 +10,7 @@
 
         <TextView
             style="@style/Subtitle"
-            android:text="TikTok, YouTube Shorts and Instagram share one daily pot of entertainment time, and only open at the times you allow." />
+            android:text="TikTok, YouTube Shorts, Instagram and any other apps you add share one daily pot of entertainment time, and only open at the times you allow." />
 
         <LinearLayout style="@style/Card.First">
 
@@ -27,6 +27,10 @@
             <CheckBox android:id="@+id/appTiktok" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TikTok (whole app)" />
             <CheckBox android:id="@+id/appShorts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="YouTube Shorts (normal YouTube stays free)" />
             <CheckBox android:id="@+id/appInstagram" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Instagram (whole app)" />
+
+            <TextView style="@style/FieldLabel" android:text="Other apps you treat like social media" />
+            <TextView android:id="@+id/otherAppsText" style="@style/Body" />
+            <Button android:id="@+id/otherAppsButton" style="@style/LinkButton" android:text="Choose other apps…" />
         </LinearLayout>
 
         <LinearLayout style="@style/Card">
@@ -42,7 +46,7 @@
             <TextView
                 style="@style/Caption"
                 android:layout_marginTop="@dimen/space_m"
-                android:text="Outside these times, or once the minutes are used up, the apps won't open. The only way in is a force open: 5 minutes, and every streak is cut in half." />
+                android:text="Outside these times, or once the minutes are used up, the apps won't open. The only way in is a force open: 5 minutes, and it resets your social streak." />
         </LinearLayout>
 
         <Button android:id="@+id/saveButton" style="@style/PrimaryButton" android:layout_marginTop="@dimen/space_xl" android:text="Save" />

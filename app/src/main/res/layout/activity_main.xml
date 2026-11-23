@@ -57,7 +57,7 @@
 
         <!-- Status -->
         <LinearLayout style="@style/Card">
-            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_chat" android:text="WhatsApp status" />
+            <TextView style="@style/Heading" android:drawableStart="@drawable/ic_chat" android:text="WhatsApp" />
             <TextView android:id="@+id/protectionText" style="@style/Body" />
             <Button android:id="@+id/enableButton" style="@style/PrimaryButton" android:text="Turn on in Accessibility settings" />
             <TextView android:id="@+id/usageText" style="@style/Body" android:layout_marginTop="@dimen/space_m" />
@@ -71,6 +71,8 @@
                 android:progressTint="@color/accent" />
             <TextView android:id="@+id/nowText" style="@style/Caption" android:layout_marginTop="@dimen/space_s" />
             <Button android:id="@+id/settingsButton" style="@style/LockedLinkButton" android:text="Status settings" />
+            <TextView android:id="@+id/focusText" style="@style/Body" android:layout_marginTop="@dimen/space_m" />
+            <Button android:id="@+id/focusButton" style="@style/LockedLinkButton" android:text="Focus times" />
         </LinearLayout>
 
         <!-- Social media -->

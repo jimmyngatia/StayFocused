@@ -98,6 +98,21 @@
             android:taskAffinity="com.personal.statusguard.social"
             android:theme="@style/CoverTheme" />
 
+        <!-- Covers WhatsApp during a focus time once the quick check is used up. -->
+        <activity
+            android:name=".FocusBlockActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.personal.statusguard.focus"
+            android:theme="@style/CoverTheme" />
+
+        <activity
+            android:name=".FocusTimesActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:label="WhatsApp focus times" />
+
         <activity
             android:name=".PasswordActivity"
             android:exported="false"

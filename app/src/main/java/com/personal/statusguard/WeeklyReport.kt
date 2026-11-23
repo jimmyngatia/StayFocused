@@ -63,8 +63,12 @@ class WeeklyReport(
     val score: Int,
     val grade: String,
     val gradeComment: String,
-    val statusStreak: Int,
+    val whatsappStreak: Int,
     val sleepStreak: Int,
+    val focusSeconds: Long, // WhatsApp time used during focus times
+    val focusTries: Long, // WhatsApp covered during focus times
+    val focusExtras: Long, // "Open anyway" during focus times
+    val hasFocusTimes: Boolean,
     val alarmStreak: Int,
     val social: SocialWeek,
     val socialStreak: Int,
@@ -133,6 +137,12 @@ class WeeklyReport(
             if (resisted > 0) append("$resisted times I paused and chose not to open status at all.")
         }
 
+        if (hasFocusTimes || focusExtras > 0) parts += "WhatsApp focus times" to buildString {
+            append("During my WhatsApp focus times I used WhatsApp for ${formatSeconds(focusSeconds)}. ")
+            append(if (focusTries == 0L) "It never had to be closed. " else "It was closed on me $focusTries times when my quick-check minutes were used up. ")
+            append(if (focusExtras == 0L) "I never opened it anyway." else "I opened it anyway $focusExtras times.")
+        }
+
         if (social.hasData) parts += "Social media" to buildString {
             val s = social
             val used = s.apps.filter { it.totalSeconds > 0 }
@@ -153,7 +163,7 @@ class WeeklyReport(
             if (s.forceOpens == 0L) append("I never used force open.")
             else append("I force-opened them ${s.forceOpens} times (" +
                 s.apps.filter { it.forceOpens > 0 }.joinToString(", ") { "${it.app.label} ${it.forceOpens}" } +
-                "), and each one cut all my streaks in half.")
+                "), and each one reset my social streak.")
         }
 
         val alarms = alarmsDone + alarmsStopped + alarmsEscaped
@@ -177,12 +187,12 @@ class WeeklyReport(
                 append("My longest night was before ${dayName(best)} (${PhoneUsage.format(sleepMsPerDay[best])}). ")
             } else append("No sleep was counted this week. ")
             append(if (sleepAttempts == 0L) "I didn't try to open any apps during sleep time" else "During sleep time I tried to open apps $sleepAttempts times")
-            append(if (sleepEmergency > 0) ", and I force-bypassed the night screen $sleepEmergency times." else ", and I never force-bypassed the night screen.")
+            append(if (sleepEmergency > 0) ", and I forced the phone open $sleepEmergency times." else ", and I never forced the phone open.")
         }
 
         fun days(n: Int) = if (n == 1) "1 day" else "$n days"
-        parts += "Streaks" to "My general streak is ${days(overallStreak)} with every rule kept, and I kept every rule on $cleanDays of the last 7 days. " +
-            "My status streak is ${days(statusStreak)}, I have $alarmStreak mornings in a row, and ${days(sleepStreak)} without sleep-time attempts" +
+        parts += "Streaks" to "My general streak is ${days(overallStreak)} with every streak held, and I had no slips on $cleanDays of the last 7 days. " +
+            "My WhatsApp streak is ${days(whatsappStreak)}, I have $alarmStreak mornings in a row, and ${days(sleepStreak)} without forcing my phone open at night" +
             (if (social.hasData) ". My social media streak is ${days(socialStreak)}." else ".")
 
         return parts
@@ -272,7 +282,7 @@ class WeeklyReport(
             "Grade $grade ($score/100): $gradeComment\n\n" +
             "My streak: ${days(overallStreak)} with every rule kept ($cleanDays of the last 7 days)\n" +
             "Mornings: $alarmStreak in a row\n" +
-            "Status: ${days(statusStreak)}  ·  Sleep: ${days(sleepStreak)}" +
+            "WhatsApp: ${days(whatsappStreak)}  ·  Sleep: ${days(sleepStreak)}" +
             (if (social.hasData) "  ·  Social media: ${days(socialStreak)}" else "") +
             "\n\nThe full report is in the attached PDF."
     }
@@ -309,23 +319,26 @@ class WeeklyReport(
             val sleepEmergency = total(week, History.SLEEP_EMERGENCY)
             val alarmsStopped = total(week, History.ALARMS_STOPPED)
             val alarmsEscaped = total(week, History.ALARMS_ESCAPED)
+            val focusTries = total(week, History.WA_FOCUS_TRIES)
+            val focusExtras = total(week, History.WA_EXTRA)
 
             val socialPrefs = SocialPrefs(context)
             val social = SocialWeek(
                 enabled = socialPrefs.enabled,
                 limitMinutes = socialPrefs.limitMinutes,
                 windows = socialPrefs.timeWindows,
-                apps = SocialApp.entries.map { app ->
+                apps = SocialApp.all(context).map { app ->
                     SocialAppWeek(app, week.map { h.get(it, app.secondsField) }, total(week, app.triesField), total(week, app.forceField))
                 },
-                triesPerDay = week.map { d -> SocialApp.entries.sumOf { h.get(d, it.triesField) } },
-                forcePerDay = week.map { d -> SocialApp.entries.sumOf { h.get(d, it.forceField) } },
+                triesPerDay = week.map { d -> SocialApp.all(context).sumOf { h.get(d, it.triesField) } },
+                forcePerDay = week.map { d -> SocialApp.all(context).sumOf { h.get(d, it.forceField) } },
                 peakHour = (0..23).maxByOrNull { total(week, "social_hour_$it") }?.takeIf { total(week, "social_hour_$it") > 0 },
             )
 
             // ---- Grade ----
             var score = 100
-            score -= minOf(40, 4 * (statusAttempts + sleepAttempts + social.tries).toInt())
+            score -= minOf(40, 4 * (statusAttempts + sleepAttempts + social.tries + focusTries).toInt())
+            score -= 8 * focusExtras.toInt()
             score -= 8 * social.forceOpens.toInt()
             score -= 10 * (alarmsStopped + alarmsEscaped).toInt()
             val backToSleepDays = week.count { h.get(it, History.AWAKE_MISSED) > 0 }
@@ -347,7 +360,8 @@ class WeeklyReport(
                 phonePerDay = phone,
                 statusMinutesPerDay = week.map { h.get(it, History.STATUS_SECONDS) / 60 },
                 attemptsPerDay = week.indices.map { i ->
-                    h.get(week[i], History.STATUS_ATTEMPTS) + h.get(week[i], History.SLEEP_ATTEMPTS) + social.triesPerDay[i]
+                    h.get(week[i], History.STATUS_ATTEMPTS) + h.get(week[i], History.SLEEP_ATTEMPTS) +
+                        h.get(week[i], History.WA_FOCUS_TRIES) + social.triesPerDay[i]
                 },
                 topApps = topApps,
                 hasPhoneData = PhoneUsage.hasAccess(context),
@@ -372,8 +386,12 @@ class WeeklyReport(
                 score = score,
                 grade = grade,
                 gradeComment = comment,
-                statusStreak = h.statusStreak(),
-                sleepStreak = h.cleanStreak(History.SLEEP_ATTEMPTS),
+                whatsappStreak = h.whatsappStreak(),
+                sleepStreak = h.sleepStreak(),
+                focusSeconds = total(week, History.WA_FOCUS_SECONDS),
+                focusTries = focusTries,
+                focusExtras = focusExtras,
+                hasFocusTimes = FocusStore(context).blocks().isNotEmpty(),
                 alarmStreak = h.alarmStreak,
                 social = social,
                 socialStreak = h.socialStreak(),

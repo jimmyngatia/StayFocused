@@ -49,7 +49,7 @@ class ReportActivity : Activity() {
         card("My streaks", R.drawable.ic_flame).apply {
             addView(streakBlock(this@ReportActivity))
             addView(text(R.style.Caption, if (r.social.forceOpens > 0)
-                "${r.social.forceOpens} force opens this week. Each one cut every streak in half."
+                "${r.social.forceOpens} force opens this week. Each one reset the social streak."
             else "No force opens this week.").apply {
                 setPadding(0, dp(Space.M), 0, 0)
                 if (r.social.forceOpens > 0) icon(R.drawable.ic_warning, R.color.warning)

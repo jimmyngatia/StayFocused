@@ -13,7 +13,9 @@ import android.view.accessibility.AccessibilityEvent
  *   screen as soon as status isn't allowed.
  * - Sleep time: the night screen covers everything except the allowed apps (see [SleepGuard]).
  *   WhatsApp and WhatsApp Business calls still come through.
- * - Social media: TikTok, Instagram and YouTube Shorts share one daily pot (see [SocialGuard]).
+ * - WhatsApp focus times: a short quick check, then WhatsApp closes until the focus time ends (see [FocusGuard]).
+ * - Social media: TikTok, Instagram, YouTube Shorts and the apps you add share one daily pot (see [SocialGuard]).
+ * - A running alarm and sleep time: the power menu, notification bar and Settings are closed (see [EscapeGuard]).
  * Only app names and WhatsApp's screens are looked at; nothing else is read.
  */
 class StatusGuardService : AccessibilityService() {
@@ -21,6 +23,8 @@ class StatusGuardService : AccessibilityService() {
     private lateinit var sleepGuard: SleepGuard
     private lateinit var history: History
     private lateinit var social: SocialGuard
+    private lateinit var escape: EscapeGuard
+    private lateinit var focus: FocusGuard
     private val handler = Handler(Looper.getMainLooper())
     private var currentScreen: String? = null
     private var wasOnStatus = false
@@ -42,11 +46,15 @@ class StatusGuardService : AccessibilityService() {
         prefs = Prefs(this)
         history = History(this)
         social = SocialGuard(this, handler)
+        escape = EscapeGuard(this, handler)
+        focus = FocusGuard(this, handler)
         sleepGuard = SleepGuard(this, handler).also { it.start() }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         val pkg = event.packageName?.toString() ?: return
+        // A running alarm or sleep time: the power menu, notification bar and Settings are closed first.
+        if (escape.onEvent(event, pkg)) return
         val isWhatsApp = pkg in StatusDetector.WHATSAPP_PACKAGES
 
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
@@ -59,6 +67,8 @@ class StatusGuardService : AccessibilityService() {
         // TikTok, Instagram and YouTube Shorts: handled separately in Social.kt.
         if (social.onEvent(pkg)) return
         if (!isWhatsApp) return
+        // Focus times (e.g. morning devotion): WhatsApp closes once the quick check is used up.
+        if (focus.onEvent(currentScreen)) return
 
         // During a lockout, any WhatsApp event means it was opened.
         if (prefs.isLockedOut()) {

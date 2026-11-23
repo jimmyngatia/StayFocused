@@ -31,6 +31,7 @@ class MainActivity : Activity() {
         button(R.id.settingsButton) { withPassword { open(SettingsActivity::class.java) } }
         button(R.id.sleepButton) { withPassword { open(SleepActivity::class.java) } }
         button(R.id.socialButton) { withPassword { open(SocialSettingsActivity::class.java) } }
+        button(R.id.focusButton) { withPassword { open(FocusTimesActivity::class.java) } }
         button(R.id.passwordButton) { withPassword { open(PasswordActivity::class.java) } }
     }
 
@@ -59,9 +60,11 @@ class MainActivity : Activity() {
         // Today
         val today = LocalDate.now()
         val social = SocialPrefs(this)
-        val socialTries = SocialApp.entries.sumOf { history.get(today, it.triesField) }
-        val tries = history.get(today, History.STATUS_ATTEMPTS) + history.get(today, History.SLEEP_ATTEMPTS) + socialTries
-        val forces = SocialApp.entries.sumOf { history.get(today, it.forceField) }
+        val socialApps = SocialApp.all(this)
+        val socialTries = socialApps.sumOf { history.get(today, it.triesField) }
+        val tries = history.get(today, History.STATUS_ATTEMPTS) + history.get(today, History.SLEEP_ATTEMPTS) +
+            history.get(today, History.WA_FOCUS_TRIES) + socialTries
+        val forces = socialApps.sumOf { history.get(today, it.forceField) } + history.get(today, History.WA_EXTRA)
         val phone = PhoneUsage.days(this, today, today)[today]?.totalMs
         text(
             R.id.todayText, (phone?.let { "${PhoneUsage.format(it)} on phone  ·  " } ?: "") + "$tries blocked tries" +
@@ -86,6 +89,25 @@ class MainActivity : Activity() {
         }
         findViewById<TextView>(R.id.nowText).status(reason == null && !prefs.isLockedOut(), now)
 
+        // WhatsApp focus times
+        val focus = FocusStore(this)
+        val focusNow = focus.current()
+        text(
+            R.id.focusText, when {
+                focusNow != null -> {
+                    val (b, day) = focusNow
+                    val left = (b.quickMinutes * 60 - focus.usedSeconds(b, day)).coerceAtLeast(0)
+                    "Focus time now: ${b.name} until ${b.endText()}\n" +
+                        (if (focus.isExtraOpen()) "Opened anyway: about ${(focus.extraUntil - System.currentTimeMillis()) / 60_000 + 1} min left."
+                        else if (left > 0) "Quick check left: ${formatSeconds(left.toLong())}"
+                        else "Quick check used up. WhatsApp is closed.")
+                }
+                focus.blocks().any { it.enabled } -> "Focus times: " + focus.blocks().filter { it.enabled }
+                    .joinToString(", ") { "${it.name} ${it.startText()}–${it.endText()}" }
+                else -> "Focus times: none yet. Close WhatsApp at set times, like your morning devotion."
+            }
+        )
+
         // Social media
         val used = social.usedSecondsToday()
         text(
@@ -97,12 +119,12 @@ class MainActivity : Activity() {
             max = maxOf(1, social.limitMinutes * 60)
             progress = used.toInt()
         }
-        val forcedApp = SocialApp.entries.firstOrNull { social.isForceOpen(it) }
-        val socialReason = social.apps.firstNotNullOfOrNull { social.blockReason(it) }
+        val forcedApp = socialApps.firstOrNull { social.isForceOpen(it) }
+        val socialReason = social.guardedApps(this).firstNotNullOfOrNull { social.blockReason(it) }
         findViewById<TextView>(R.id.socialNowText).apply {
             when {
                 !social.enabled -> {
-                    text = "TikTok, YouTube Shorts and Instagram share one daily limit and allowed times."
+                    text = "TikTok, YouTube Shorts, Instagram and any apps you add share one daily limit and allowed times."
                     icon(0)
                 }
                 forcedApp != null -> {
@@ -114,7 +136,7 @@ class MainActivity : Activity() {
         }
         text(
             R.id.socialAppsText,
-            SocialApp.entries.joinToString("\n") { app ->
+            socialApps.filter { social.isGuarded(it) || history.get(today, it.secondsField) > 0 }.joinToString("\n") { app ->
                 "${app.label}: ${formatSeconds(history.get(today, app.secondsField))}  ·  ${history.get(today, app.triesField)} tries" +
                     history.get(today, app.forceField).let { if (it > 0) "  ·  $it force opens" else "" }
             }

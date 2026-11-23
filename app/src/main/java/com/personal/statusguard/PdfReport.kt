@@ -57,24 +57,24 @@ object PdfReport {
         w.section("My streaks")
         w.tiles(
             listOf(
-                Tile("${r.overallStreak} days", "In a row with every rule kept. Blocked tries don't count; force opens and shortcuts do.", Ink.GREEN),
-                Tile("${r.cleanDays} of 7", "Days this week with every rule kept", Ink.TEAL),
+                Tile("${r.overallStreak} days", "In a row with every streak held. Blocked tries don't count; force opens and shortcuts do.", Ink.GREEN),
+                Tile("${r.cleanDays} of 7", "Days this week with no slips", Ink.TEAL),
             ),
             big = true,
         )
         w.space(10f)
         w.tiles(
             listOf(
-                Tile("${r.statusStreak}", "Status: days (halved by force opens)", Ink.PURPLE),
-                Tile("${r.socialStreak}", "Social media: days (halved by force opens)", Ink.PURPLE),
+                Tile("${r.whatsappStreak}", "WhatsApp: days without an extra open", Ink.PURPLE),
+                Tile("${r.socialStreak}", "Social media: days without a force open", Ink.PURPLE),
                 Tile("${r.alarmStreak}", "Mornings in a row", Ink.PURPLE),
-                Tile("${r.sleepStreak}", "Sleep: days without tries", Ink.PURPLE),
+                Tile("${r.sleepStreak}", "Sleep: nights without forcing the phone open", Ink.PURPLE),
             ),
             big = true,
         )
         w.paragraph(
-            if (r.social.forceOpens > 0) "${r.social.forceOpens} force opens this week. Each one cut every streak in half."
-            else "No force opens this week, so no streak was cut.",
+            if (r.social.forceOpens > 0) "${r.social.forceOpens} social media force opens this week. Each one reset the social streak."
+            else "No social media force opens this week.",
             9.5f, Ink.MUTED,
         )
 

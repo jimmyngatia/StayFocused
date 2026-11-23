@@ -105,11 +105,11 @@ class NightActivity : Activity() {
 
         val h = History(this)
         val overall = h.overallStreak()
-        val sleep = h.cleanStreak(History.SLEEP_ATTEMPTS)
+        val sleep = h.sleepStreak()
         text(
             R.id.costText,
-            "Streak $overall → 0  ·  Sleep $sleep → ${sleep / 2}\n" +
-                "Status, social and morning streaks are cut in half too.\n" +
+            "Sleep streak $sleep → 0  ·  General streak $overall → 0\n" +
+                "Your other streaks are not touched.\n" +
                 "The whole phone opens for ${SleepStore.BYPASS_MINUTES} minutes, then the night screen comes back. " +
                 "It shows in your weekly report."
         )
@@ -155,7 +155,7 @@ class NightActivity : Activity() {
 
     private fun bypass() {
         store.startBypass()
-        Toast.makeText(this, "Streaks cut. The phone is open for ${SleepStore.BYPASS_MINUTES} minutes.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Sleep streak reset. The phone is open for ${SleepStore.BYPASS_MINUTES} minutes.", Toast.LENGTH_LONG).show()
         unlockThen {
             startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             finish()

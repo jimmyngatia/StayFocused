@@ -12,7 +12,7 @@ import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import java.time.LocalDate
 
-/** Covers TikTok, Instagram or YouTube Shorts when they aren't allowed. Force open is the only way in. */
+/** Covers TikTok, Instagram, YouTube Shorts or an app you added when it isn't allowed. Force open is the only way in. */
 class SocialBlockActivity : Activity() {
     private var app = SocialApp.TIKTOK
 
@@ -37,13 +37,16 @@ class SocialBlockActivity : Activity() {
     }
 
     private fun show(intent: Intent) {
-        app = SocialApp.byKey(intent.getStringExtra(EXTRA_APP)) ?: SocialApp.TIKTOK
+        app = SocialApp.byKey(this, intent.getStringExtra(EXTRA_APP)) ?: SocialApp.TIKTOK
         val forceEnded = intent.getBooleanExtra(EXTRA_FORCE_ENDED, false)
         val prefs = SocialPrefs(this)
         val history = History(this)
         val today = LocalDate.now()
 
         findViewById<android.widget.ImageView>(R.id.appIcon).setImageResource(app.icon)
+        if (app.custom) runCatching { packageManager.getApplicationIcon(app.key) }.getOrNull()?.let {
+            findViewById<android.widget.ImageView>(R.id.appIcon).apply { imageTintList = null; setImageDrawable(it) }
+        }
         text(R.id.titleText, if (forceEnded) "Your 5 minutes are up" else "${app.label} is closed for now")
         text(R.id.reasonText, intent.getStringExtra(EXTRA_REASON) ?: "")
         val (quote, source) = Encouragements.pick(this)
@@ -58,19 +61,14 @@ class SocialBlockActivity : Activity() {
         )
         text(R.id.streakText, "Streak: ${history.overallStreak()} days with every rule kept")
 
-        // What a force open would cost, streak by streak.
+        // What a force open would cost.
         val social = history.socialStreak()
-        val status = history.statusStreak()
-        val sleep = history.cleanStreak(History.SLEEP_ATTEMPTS)
-        val mornings = history.alarmStreak
         val overall = history.overallStreak()
-        val forcesToday = SocialApp.entries.sumOf { history.get(today, it.forceField) }
+        val forcesToday = SocialApp.all(this).sumOf { history.get(today, it.forceField) }
         text(
             R.id.costText,
-            "Every streak is cut in half:\n" +
-                "Streak $overall → 0 (a force open is a slip)\n" +
-                "Status $status → ${status / 2}  ·  Social $social → ${social / 2}\n" +
-                "Sleep $sleep → ${sleep / 2}  ·  Mornings $mornings → ${mornings / 2}\n\n" +
+            "Social streak $social → 0  ·  General streak $overall → 0\n" +
+                "Your other streaks are not touched.\n\n" +
                 "It opens ${app.label} for ${SocialPrefs.FORCE_MINUTES} minutes only, and it shows in your weekly report." +
                 if (forcesToday > 0) "\nYou've already force-opened $forcesToday times today." else ""
         )
@@ -81,7 +79,7 @@ class SocialBlockActivity : Activity() {
 
     private fun forceOpen() {
         SocialPrefs(this).forceOpen(app)
-        Toast.makeText(this, "Streaks halved. ${app.label} is open for ${SocialPrefs.FORCE_MINUTES} minutes.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Social streak reset. ${app.label} is open for ${SocialPrefs.FORCE_MINUTES} minutes.", Toast.LENGTH_LONG).show()
         app.packages.firstNotNullOfOrNull { packageManager.getLaunchIntentForPackage(it) }
             ?.let { startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
         finish()
