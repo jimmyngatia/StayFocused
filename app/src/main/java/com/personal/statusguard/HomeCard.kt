@@ -69,16 +69,30 @@ class HomeCard(private val service: AccessibilityService, private val handler: H
 
     /** Called for every accessibility event. */
     fun onEvent(type: Int, pkg: String) {
-        if (type == android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || pkg == EscapeGuard.SYSTEM_UI) {
+        // The launcher too: opening the app list or recent apps doesn't change the app in front.
+        if (type == android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || pkg == EscapeGuard.SYSTEM_UI || pkg in homePackages) {
             handler.removeCallbacks(check)
             handler.postDelayed(check, 150)
         }
     }
 
     private fun update() {
-        val front = service.rootInActiveWindow?.packageName?.toString()
-        val onHome = front != null && front in homePackages && !keyguard.isKeyguardLocked
+        val root = service.rootInActiveWindow
+        val front = root?.packageName?.toString()
+        val onHome = front != null && front in homePackages && !keyguard.isKeyguardLocked && onHomePage(root, front)
         if (enabled(service) && onHome) show() else hide()
+    }
+
+    /**
+     * The launcher is in front, but is it the home screen itself? Not the app list or recent apps.
+     * (Launcher3 names these parts "apps_view" and "workspace"; other launchers just count as home.)
+     */
+    private fun onHomePage(root: android.view.accessibility.AccessibilityNodeInfo, pkg: String): Boolean {
+        fun visible(id: String) = root.findAccessibilityNodeInfosByViewId("$pkg:id/$id").any { it.isVisibleToUser }
+        fun exists(id: String) = root.findAccessibilityNodeInfosByViewId("$pkg:id/$id").isNotEmpty()
+        if (visible("apps_view") || visible("apps_list_view")) return false
+        if (exists("workspace") && !visible("workspace")) return false
+        return true
     }
 
     private fun show() {
