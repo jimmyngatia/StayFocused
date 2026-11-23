@@ -41,8 +41,21 @@ class HomeCard(private val service: AccessibilityService, private val handler: H
     private var phoneMs: Long? = null
     private var phoneAt = 0L
 
-    /** Your home screen app only (Settings and some other apps also call themselves "home"). */
-    private val homePackages: Set<String> get() = setOfNotNull(defaultHome(service))
+    /**
+     * Your home screen app only (Settings and some other apps also call themselves "home").
+     * Looked up once a minute: this runs on every event from every app, so it must be cheap.
+     */
+    private var home = emptySet<String>()
+    private var homeAt = 0L
+    private val homePackages: Set<String>
+        get() {
+            val now = SystemClock.elapsedRealtime()
+            if (now - homeAt > 60_000) {
+                home = setOfNotNull(defaultHome(service))
+                homeAt = now
+            }
+            return home
+        }
 
     private val folded get() = prefs.getBoolean("card_folded", false)
 

@@ -75,7 +75,7 @@ class StatusGuardService : AccessibilityService() {
         // Devotion time: apps that aren't free close once the quick check is used up.
         if (devotion.onEvent()) return
         // TikTok, Instagram and YouTube Shorts: handled separately in Social.kt.
-        if (social.onEvent(pkg)) return
+        if (social.onEvent(pkg, event.eventType)) return
         if (!isWhatsApp) return
         // Focus times (e.g. morning devotion): WhatsApp closes once the quick check is used up.
         if (focus.onEvent(currentScreen)) return

@@ -164,12 +164,24 @@ class FocusGuard(private val service: AccessibilityService, private val handler:
         }
     }
 
+    /** Looks again a little later: on a slow phone WhatsApp's first screen can take seconds to be readable. */
+    private val retries = listOf(1000L, 3000L, 6000L).map { delay -> delay to Runnable { startTicking() } }
+
+    private fun startTicking() {
+        if (ticking) return
+        ticking = check(countSecond = false)
+        if (ticking) handler.postDelayed(tick, 1000)
+    }
+
     /** Called for WhatsApp events. [currentScreen] is WhatsApp's screen (to let calls through). Returns true if WhatsApp is covered. */
     fun onEvent(currentScreen: String?): Boolean {
         screen = currentScreen
         if (!ticking) {
-            ticking = check(countSecond = false)
-            if (ticking) handler.postDelayed(tick, 1000)
+            startTicking()
+            if (!ticking && store.current() != null) for ((delay, run) in retries) {
+                handler.removeCallbacks(run)
+                handler.postDelayed(run, delay)
+            }
         }
         return covering
     }

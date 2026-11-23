@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.PowerManager
 import android.util.Log
+import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import java.time.LocalDate
 import java.time.LocalTime
@@ -168,13 +169,38 @@ class SocialGuard(private val service: AccessibilityService, private val handler
         }
     }
 
+    /**
+     * Looks again a little later. A slow phone can take seconds to draw an app's first screen, and
+     * until then the screen can't be read (and an app stuck on its splash screen sends nothing more).
+     */
+    private val retries = listOf(1000L, 3000L, 6000L).map { delay -> delay to Runnable { startTicking() } }
+
+    private fun startTicking() {
+        if (ticking) return
+        ticking = check(countSecond = false)
+        if (ticking) handler.postDelayed(tick, 1000)
+    }
+
     /** Called for every accessibility event. Returns true if it was a social app (handled here). */
-    fun onEvent(pkg: String): Boolean {
+    fun onEvent(pkg: String, type: Int): Boolean {
         val app = SocialApp.of(service, pkg) ?: return false
         if (!prefs.isGuarded(app)) return true
+        // A whole app (not Shorts) that isn't allowed now: cover it as soon as it opens, without
+        // waiting to read its screen (on a slow phone that can take a long time).
+        if (type == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && app != SocialApp.SHORTS && !covering &&
+            !SleepStore(service).isBlockedNow(pkg)
+        ) {
+            prefs.blockReason(app)?.let { reason ->
+                block(app, pkg, reason)
+                return true
+            }
+        }
         if (!ticking) {
-            ticking = check(countSecond = false)
-            if (ticking) handler.postDelayed(tick, 1000)
+            startTicking()
+            if (!ticking) for ((delay, run) in retries) {
+                handler.removeCallbacks(run)
+                handler.postDelayed(run, delay)
+            }
         }
         return true
     }
