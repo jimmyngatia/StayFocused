@@ -65,9 +65,7 @@ class DevotionStore(private val context: Context) {
         val sleep = SleepStore(context)
         val keyboard = Settings.Secure.getString(context.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
             ?.let { ComponentName.unflattenFromString(it)?.packageName }
-        val home = context.packageManager.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)
-            .map { it.activityInfo.packageName }
-        return apps + sleep.basicApps() + context.packageName + SleepStore.SYSTEM_PACKAGES + home + listOfNotNull(keyboard)
+        return apps + sleep.basicApps() + context.packageName + SleepStore.SYSTEM_PACKAGES + listOfNotNull(keyboard, HomeCard.defaultHome(context))
     }
 
     // ---- The quick check and "Open anyway" ----

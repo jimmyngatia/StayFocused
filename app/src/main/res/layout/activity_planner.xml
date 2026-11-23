@@ -74,6 +74,16 @@
         <LinearLayout style="@style/Card">
 
             <CheckBox
+                android:id="@+id/homeCardSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show My day on my home screen" />
+
+            <TextView
+                style="@style/Caption"
+                android:text="A card on your home screen, like a widget: tick points, fold it with the arrow, drag the title to move it. It only shows on the home screen." />
+
+            <CheckBox
                 android:id="@+id/notificationSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -81,7 +91,7 @@
 
             <TextView
                 style="@style/Caption"
-                android:text="Pull it open to see today's list and tick points from there. Swipe it away to hide it until tomorrow. If your phone supports widgets, you can also add the My day widget to your home screen." />
+                android:text="Pull it open to see today's list and tick points from there. Swipe it away to hide it until tomorrow. Phones that support widgets can also add the My day widget." />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

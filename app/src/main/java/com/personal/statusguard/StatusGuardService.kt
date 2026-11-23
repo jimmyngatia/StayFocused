@@ -28,6 +28,7 @@ class StatusGuardService : AccessibilityService() {
     private lateinit var escape: EscapeGuard
     private lateinit var focus: FocusGuard
     private lateinit var devotion: DevotionGuard
+    private lateinit var homeCard: HomeCard
     private val handler = Handler(Looper.getMainLooper())
     private var currentScreen: String? = null
     private var wasOnStatus = false
@@ -52,11 +53,14 @@ class StatusGuardService : AccessibilityService() {
         escape = EscapeGuard(this, handler)
         focus = FocusGuard(this, handler)
         devotion = DevotionGuard(this, handler).also { it.start() }
+        homeCard = HomeCard(this, handler).also { it.start() }
         sleepGuard = SleepGuard(this, handler).also { it.start() }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         val pkg = event.packageName?.toString() ?: return
+        // My day on the home screen (phones without widgets).
+        homeCard.onEvent(event.eventType, pkg)
         // A running alarm or sleep time: the power menu, notification bar and Settings are closed first.
         if (escape.onEvent(event, pkg)) return
         val isWhatsApp = pkg in StatusDetector.WHATSAPP_PACKAGES
@@ -201,6 +205,7 @@ class StatusGuardService : AccessibilityService() {
         handler.removeCallbacksAndMessages(null)
         if (::sleepGuard.isInitialized) sleepGuard.stop()
         if (::devotion.isInitialized) devotion.stop()
+        if (::homeCard.isInitialized) homeCard.stop()
         super.onDestroy()
     }
 

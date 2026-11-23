@@ -40,6 +40,10 @@ class PlannerActivity : Activity() {
             if (action == EditorInfo.IME_ACTION_DONE) add()
             action == EditorInfo.IME_ACTION_DONE
         }
+        findViewById<CheckBox>(R.id.homeCardSwitch).apply {
+            isChecked = HomeCard.enabled(this@PlannerActivity)
+            setOnCheckedChangeListener { _, on -> HomeCard.setEnabled(this@PlannerActivity, on) }
+        }
         findViewById<CheckBox>(R.id.notificationSwitch).apply {
             isChecked = DayNotification.enabled(this@PlannerActivity)
             setOnCheckedChangeListener { _, on -> DayNotification.setEnabled(this@PlannerActivity, on) }

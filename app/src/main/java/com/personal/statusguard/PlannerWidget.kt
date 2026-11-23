@@ -61,6 +61,7 @@ class PlannerWidget : AppWidgetProvider() {
         /** Redraws every "My day" widget and the My day notification. */
         fun refresh(context: Context) {
             DayNotification.update(context)
+            HomeCard.redrawIfShowing()
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, PlannerWidget::class.java))
             if (ids.isEmpty()) return
